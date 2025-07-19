@@ -1,0 +1,32 @@
+#include "Piece.hpp"
+#include <iostream>
+
+Piece::Piece() : _name{"unknown"}, _damage{1}, _health{1}{}
+Piece::Piece(std::string name, const int damage) : _name{name}, _damage{damage}, _health{1}{}
+Piece::Piece(std::string name, const int damage, const int health) : _name{name}, _damage{damage}, _health{health}{}
+Piece::~Piece() = default;
+std::string Piece::getName() const{
+    return _name;
+}
+int Piece::getHealth() const{
+    return _health;
+}
+int Piece::getDamage() const{
+    return _damage;
+}
+void Piece::setName(const std::string name){
+    _name = name;
+}
+void Piece::setHealth(const int health){
+    _health = health;
+}
+void Piece::setDamage(const int damage){
+    _damage = damage;
+}
+
+void Piece::increaseMoveNumber(){
+    _move_number++;
+}
+int Piece::getMoveNumber() const{
+    return _move_number;
+}
