@@ -1,9 +1,12 @@
 #include "Piece.hpp"
 #include <iostream>
 
-Piece::Piece() : _name{"unknown"}, _damage{1}, _health{1}{}
-Piece::Piece(std::string name, const int damage) : _name{name}, _damage{damage}, _health{1}{}
-Piece::Piece(std::string name, const int damage, const int health) : _name{name}, _damage{damage}, _health{health}{}
+Piece::Piece() : _name{"unknown"}, _damage{1}, _health{1}{
+}
+Piece::Piece(std::string name, const int damage, const Team team) : _name{name}, _damage{damage}, 
+_team{team}, _health{1}{}
+Piece::Piece(std::string name, const int damage, const int health, const Team team) : _name{name}, _damage{damage}, 
+_team{team}, _health{health}{}
 Piece::~Piece() = default;
 std::string Piece::getName() const{
     return _name;
@@ -29,4 +32,10 @@ void Piece::increaseMoveNumber(){
 }
 int Piece::getMoveNumber() const{
     return _move_number;
+}
+Piece::Team Piece::getTeam() const {
+    return _team;
+}
+void Piece::setTeam(const Team team) {
+    _team = team;
 }

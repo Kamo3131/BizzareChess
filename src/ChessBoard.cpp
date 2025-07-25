@@ -11,6 +11,9 @@ void ChessBoard::init(){
             pieces.push_back(std::move(column));
         }
 }
+
+void ChessBoard::initPieces(){
+}
 ChessBoard::ChessBoard() : _horizontal{8}, _vertical{8}{
     init();
 }
@@ -45,6 +48,7 @@ void ChessBoard::printSquares() const{
         }
     }
 void ChessBoard::printBoard() const{
+    //Tu jest coś zepsute, NAPRAWIĆ!
         for(int i = _vertical; i>-1; i--){
             for(int j = -1; j < static_cast<int>(_horizontal); j++){
                 std::ostringstream ss;
@@ -59,9 +63,16 @@ void ChessBoard::printBoard() const{
                 } else if(-1!=j && 0==i){
                     ss << static_cast<char>(j+65) << "  ";
                 } else if(pieces[j][i]==nullptr){
-                    ss << " ";
+                    ss << "  ";
                 } else if(pieces[j][i]!=nullptr){
-                    ss << "P ";
+                    ss << (pieces[j][i]->getName())[0];
+                    if(pieces[j][i]->getTeam() == Piece::Team::WHITE){
+                        ss << "W  ";
+                    } else if(pieces[j][i]->getTeam() == Piece::Team::BLACK){
+                        ss << "B  ";
+                    } else {
+                        ss << "?  "; // Unknown team
+                    };
                 }
                 std::cout << ss.str();
             }
@@ -72,14 +83,15 @@ void ChessBoard::printBoard() const{
 
     void ChessBoard::move(const std::size_t o_x, const std::size_t o_y, const int x, const int y){
         if(pieces[o_x][o_y]->move(x, y) && pieces[o_x+x][o_y+y] == nullptr){
-            pieces[o_x][o_x]->increaseMoveNumber();
-            pieces[o_x+x][o_x+y] = std::move(pieces[o_x][o_y]);
+            pieces[o_x][o_y]->increaseMoveNumber();
+            pieces[o_x+x][o_y+y] = std::move(pieces[o_x][o_y]);
         } 
-        else if(pieces[o_x][o_y]->attack(x, y) && pieces[o_x+x][o_y+y] != nullptr){
+        else if(pieces[o_x][o_y]->attack(x, y) && pieces[o_x+x][o_y+y] != nullptr && 
+        pieces[o_x+x][o_y+y]->getTeam() != pieces[o_x][o_y]->getTeam()){
             std::cout << pieces[o_x][o_y]->getName() << " attacks " << pieces[o_x+x][o_y+y]->getName() << " at (" << o_x+x << ", " << o_y+y << ")." << std::endl;
             damagePiece(o_x+x, o_y+y);
             if(pieces[o_x+x][o_y+y] == nullptr){
-                pieces[o_x+x][o_x+y] = std::move(pieces[o_x][o_y]);
+                pieces[o_x+x][o_y+y] = std::move(pieces[o_x][o_y]);
             }
         } 
         else{

@@ -2,7 +2,8 @@
 #include <iostream>
 #include <sstream>
 std::size_t Pawn::amount = 0;
-Pawn::Pawn() : Piece(){
+Pawn::Pawn(const Piece::Team team) : Piece(){
+    setTeam(team);
     std::ostringstream ss;
     ss << "Pawn(" << amount << ")";
     setName(ss.str());

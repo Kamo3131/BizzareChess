@@ -12,6 +12,14 @@
 struct Piece{
     
     /**
+     * @brief Enum representing the team to which a piece belongs.
+     * Can be used for game logic, such as determining valid moves or attacks.
+     */
+    enum Team{
+        WHITE,
+        BLACK
+    };
+    /**
      * @brief Default constructor. Initializes a piece with default values:
      * name "unknown", damage 1, and health 1.
      */
@@ -22,16 +30,18 @@ struct Piece{
      * Health is defaulted to 1.
      * @param name The name of the piece.
      * @param damage The damage value of the piece.
+     * @param team The team to which the piece belongs.
      */
-    Piece(std::string name, const int damage);
+    Piece(std::string name, const int damage, const Team team);
 
     /**
      * @brief Constructor that initializes a piece with a name, damage, and health.
      * @param name The name of the piece.
      * @param damage The damage value of the piece.
      * @param health The health value of the piece.
+     * @param team The team to which the piece belongs.
      */
-    Piece(std::string name, const int damage, const int health);
+    Piece(std::string name, const int damage, const int health, const Team team);
     /**
      * @brief Virtual destructor. Ensures proper cleanup of derived class objects.
      */
@@ -100,6 +110,17 @@ struct Piece{
      * @brief Increments the move counter for the piece.
      */
     void increaseMoveNumber();
+    
+    /**
+     * @brief Gets the team of the piece.
+     * @return The team to which the piece belongs.
+     */
+    Team getTeam() const;
+    /**
+     * @brief Sets the team of the piece.
+     * @param team The team to which the piece belongs.
+     */
+    void setTeam(const Team team);
     private:
     std::string _name; //The name of the piece
     int _move_number = 0; // Tracks the number of moves made by the piece
@@ -107,6 +128,7 @@ struct Piece{
      * I don't know if it will be used.
      */
     int _damage; // Default damage value, can be overridden by derived classes
+    Team _team; // The team to which the piece belongs, can be used for game logic
     int _health; // Current health value, can be overridden by derived classes
     
 };
