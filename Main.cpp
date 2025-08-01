@@ -13,10 +13,14 @@ int main(){
     chessBoard.setPiece(2, 3, std::move(pawn1B));
     auto rook1W = std::make_unique<Rook>(Piece::Team::WHITE);
     chessBoard.setPiece(7, 1, std::move(rook1W));
+    auto rook1B = std::make_unique<Rook>(Piece::Team::BLACK);
+    chessBoard.setPiece(7, 8, std::move(rook1B));
     chessBoard.printBoard();
     chessBoard.move(1, 1, 0, 1);
     chessBoard.move(7, 1, 0, 7);
     chessBoard.move(7, 8, -1, 0);
+    chessBoard.printBoard();
+    chessBoard.move(6, 8, 2, 0);
     chessBoard.printBoard();
     chessBoard.move(1, 2, 1, 1);
     chessBoard.printBoard();

@@ -49,29 +49,29 @@ void ChessBoard::printSquares() const{
     }
 void ChessBoard::printBoard() const{
     //Tu jest coś zepsute, NAPRAWIĆ!
-        for(int i = _vertical; i>-1; i--){
+        for(int i = _vertical-1; i>-2; i--){
             for(int j = -1; j < static_cast<int>(_horizontal); j++){
                 std::ostringstream ss;
-                if(-1==j && 0!=i){
-                    if(_vertical > 9 && 10>i){
-                        ss << '0' << i;
+                if(-1==j && -1!=i){
+                    if(_vertical > 9 && 9>i){
+                        ss << '0' << i+1 << "|";
                     } else{
-                        ss << i;
+                        ss << i+1 << "|";
                     }
-                } else if(-1==j && 0==i){
+                } else if(-1==j && -1==i){
                     ss << "  ";
-                } else if(-1!=j && 0==i){
-                    ss << static_cast<char>(j+65) << "  ";
+                } else if(-1!=j && -1==i){
+                    ss << " "<< static_cast<char>(j+65) << " ";
                 } else if(pieces[j][i]==nullptr){
-                    ss << "  ";
+                    ss << "  |";
                 } else if(pieces[j][i]!=nullptr){
                     ss << (pieces[j][i]->getName())[0];
                     if(pieces[j][i]->getTeam() == Piece::Team::WHITE){
-                        ss << "W  ";
+                        ss << "W|";
                     } else if(pieces[j][i]->getTeam() == Piece::Team::BLACK){
-                        ss << "B  ";
+                        ss << "B|";
                     } else {
-                        ss << "?  "; // Unknown team
+                        ss << "?|"; // Unknown team
                     };
                 }
                 std::cout << ss.str();
@@ -82,6 +82,18 @@ void ChessBoard::printBoard() const{
     }
 
     void ChessBoard::move(const std::size_t o_x, const std::size_t o_y, const int x, const int y){
+        if(o_x >= _horizontal || o_y >= _vertical){
+            std::cerr << "Error: Attempt to invoke move on piece out of bounds at (" << o_x << ", " << o_y << ")." << std::endl;
+            return;
+        }
+        if(pieces[o_x][o_y] == nullptr){
+            std::cerr << "Error: No piece at (" << o_x << ", " << o_y << ") to move." << std::endl;
+            return;
+        }
+        if(o_x+x >= _horizontal || o_y+y >= _vertical){
+            std::cerr << "Error: Attempt to move "<< pieces[o_x][o_y]->getName() << " out of bounds to (" << o_x+x << ", " << o_y+y << ")." << std::endl;
+            return;
+        }
         if(pieces[o_x][o_y]->move(x, y) && pieces[o_x+x][o_y+y] == nullptr){
             pieces[o_x][o_y]->increaseMoveNumber();
             pieces[o_x+x][o_y+y] = std::move(pieces[o_x][o_y]);
@@ -100,6 +112,20 @@ void ChessBoard::printBoard() const{
     }
 
     void ChessBoard::setPiece(const std::size_t o_x, const std::size_t o_y, std::unique_ptr<Piece> piece){
+        if(o_x >= _horizontal || o_y >= _vertical){
+            std::cerr << "Error: Attempt to set piece out of bounds at (" << o_x << ", " << o_y << ")." << std::endl;
+            return;
+        }
+        if(pieces[o_x][o_y] != nullptr){
+            std::cerr << "Error: Square (" << o_x << ", " << o_y << ") is already occupied by " 
+                      << pieces[o_x][o_y]->getName() << ". Cannot set new piece." << std::endl;
+            return;
+        }
+        if(piece == nullptr){
+            std::cerr << "Error: Attempt to set a null piece at (" << o_x << ", " << o_y << ")." << std::endl;
+            return;
+        }
+        std::cout << "Setting piece " << piece->getName() << " at (" << o_x << ", " << o_y << ")." << std::endl;
         pieces[o_x][o_y] = std::move(piece);
     }
 
