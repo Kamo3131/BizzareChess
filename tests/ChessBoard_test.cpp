@@ -71,7 +71,7 @@ TEST(ChessBoardTests, KillPieceAtTile){
 /**
  * Test the ChessBoard::move method moves a piece correctly.
  */
-TEST(ChessBoardTests, MovePawn){
+TEST(ChessBoardTests, MovePiece){
     ChessBoard board;
     std::unique_ptr<Piece> pawn1B = std::make_unique<Pawn>(Piece::Team::BLACK);
     board.setPiece(0, 0, std::move(pawn1B));
@@ -81,9 +81,22 @@ TEST(ChessBoardTests, MovePawn){
 }
 
 /**
+ * Test the ChessBoard::move method does not move a piece to an occupied square.
+ */
+TEST(ChessBoardTests, MoveToOccupiedSquare){
+    ChessBoard board;
+    std::unique_ptr<Piece> pawn1B = std::make_unique<Pawn>(Piece::Team::BLACK);
+    std::unique_ptr<Piece> pawn1W = std::make_unique<Pawn>(Piece::Team::WHITE);
+    board.setPiece(0, 0, std::move(pawn1B));
+    board.setPiece(0, 1, std::move(pawn1W));
+    board.move(0, 0, 0, 1); // Attempt to move to occupied square
+    EXPECT_TRUE(board.isPieceAt(0, 0)) << "Black pawn should still be at (0, 0) after failed move!";
+    EXPECT_TRUE(board.isPieceAt(0, 1)) << "White pawn should still be at (0, 1) after failed move!";
+}
+
+/**
  * Test the ChessBoard::move method kills an enemy piece with one health point after moving onto it.
  */
-
 TEST(ChessBoardTests, AttackEnemyPiece){
     ChessBoard board;
     std::unique_ptr<Piece> pawn1B = std::make_unique<Pawn>(Piece::Team::BLACK);
@@ -113,4 +126,95 @@ TEST(ChessBoardTests, DamageEnemyPiece){
     EXPECT_TRUE(board.isPieceAt(0, 0)) << "Black pawn should be at (0, 0) after move!";
     EXPECT_TRUE(board.isPieceAt(1, 1)) << "White pawn should be at (1, 1) after move!";
     EXPECT_EQ(board.getHealthOfPiece(1, 1), 1) << "White pawn should have health reduced to 1 after being damaged!";
+}
+
+/**
+ * Test the ChessBoard::move method does not move a piece out of bounds.
+ */
+TEST(ChessBoardTests, MoveOutOfBounds){
+    ChessBoard board;
+    std::unique_ptr<Piece> pawn1B = std::make_unique<Pawn>(Piece::Team::BLACK);
+    board.setPiece(0, 0, std::move(pawn1B));
+    board.move(0, 0, 0, 10); // Attempt to move out of bounds
+    EXPECT_TRUE(board.isPieceAt(0, 0)) << "Piece should still be at (0, 0) after failed move!";
+}
+/**
+ * Test the ChessBoard::getHealthOfPiece method returns the correct health of a piece.
+ */
+TEST(ChessBoardTests, GetHealthOfPiece){
+    ChessBoard board;
+    std::unique_ptr<Piece> pawn1B = std::make_unique<Pawn>(Piece::Team::BLACK);
+    pawn1B->setHealth(5); // Set initial health to 5
+    board.setPiece(0, 0, std::move(pawn1B));
+    EXPECT_EQ(board.getHealthOfPiece(0, 0), 5) << "Health of piece at (0, 0) should be 5!";
+}
+
+/**
+ * Test the ChessBoard::getDamageOfPiece method returns the correct damage of a piece.
+ */
+TEST(ChessBoardTests, GetDamageOfPiece){
+    ChessBoard board;
+    std::unique_ptr<Piece> pawn1B = std::make_unique<Pawn>(Piece::Team::BLACK);
+    pawn1B->setDamage(3); // Set initial damage to 3
+    board.setPiece(0, 0, std::move(pawn1B));
+    EXPECT_EQ(board.getDamageOfPiece(0, 0), 3) << "Damage of piece at (0, 0) should be 3!";
+}
+/**
+ * Test the ChessBoard::healPiece method heals a piece correctly.
+ */
+TEST(ChessBoardTests, HealPiece){
+    ChessBoard board;
+    std::unique_ptr<Piece> pawn1B = std::make_unique<Pawn>(Piece::Team::BLACK);
+    pawn1B->setHealth(5); // Set initial health to 5
+    board.setPiece(0, 0, std::move(pawn1B));
+    board.healPiece(0, 0, 3); // Heal by 3
+    EXPECT_EQ(board.getHealthOfPiece(0, 0), 8) << "Piece should be healed to 8 health!";
+}
+
+/**
+ * Test the ChessBoard::damagePiece method with default value damages a piece correctly.
+ */
+TEST(ChessBoardTests, DamagePieceByDefaultValue){
+    ChessBoard board;
+    std::unique_ptr<Piece> pawn1B = std::make_unique<Pawn>(Piece::Team::BLACK);
+    pawn1B->setHealth(5); // Set initial health to 5
+    board.setPiece(0, 0, std::move(pawn1B));
+    board.damagePiece(0, 0); // Damage by 1
+    EXPECT_EQ(board.getHealthOfPiece(0, 0), 4) << "Piece should be damaged to 3 health!";
+}
+
+/**
+ * Test the ChessBoard::damagePiece method with 3 parameters damages a piece correctly.
+ */
+TEST(ChessBoardTests, DamagePieceByCustomValue){
+    ChessBoard board;
+    std::unique_ptr<Piece> pawn1B = std::make_unique<Pawn>(Piece::Team::BLACK);
+    pawn1B->setHealth(5); // Set initial health to 5
+    board.setPiece(0, 0, std::move(pawn1B));
+    board.damagePiece(0, 0, 2); // Damage by 1
+    EXPECT_EQ(board.getHealthOfPiece(0, 0), 3) << "Piece should be damaged to 3 health!";
+}
+
+/**
+ * Test the ChessBoard::damagePiece method with default value kills a piece with 1 health point.
+ */
+TEST(ChessBoardTests, DamagePieceByDefaultValueKillsWithOneHealth){
+    ChessBoard board;
+    std::unique_ptr<Piece> pawn1B = std::make_unique<Pawn>(Piece::Team::BLACK);
+    pawn1B->setHealth(1); // Set initial health to 1
+    board.setPiece(0, 0, std::move(pawn1B));
+    board.damagePiece(0, 0); // Damage by 1
+    EXPECT_FALSE(board.isPieceAt(0, 0)) << "Piece should not be at (0, 0) after being killed!";
+}
+
+/**
+ * Test the ChessBoard::damagePiece method with 3 parameters kills a piece with 2 health point, when dealing 2 damage.
+ */
+TEST(ChessBoardTests, DamagePieceByCustomValueKillsWithTwoHealth){
+    ChessBoard board;
+    std::unique_ptr<Piece> pawn1B = std::make_unique<Pawn>(Piece::Team::BLACK);
+    pawn1B->setHealth(2); // Set initial health to 2
+    board.setPiece(0, 0, std::move(pawn1B));
+    board.damagePiece(0, 0, 2); // Damage by 2
+    EXPECT_FALSE(board.isPieceAt(0, 0)) << "Piece should not be at (0, 0) after being killed!";
 }
