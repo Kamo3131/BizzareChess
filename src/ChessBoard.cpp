@@ -26,6 +26,17 @@ std::size_t ChessBoard::getHorizontal() const{
 std::size_t ChessBoard::getVertical() const{
     return _vertical;
 }
+
+bool ChessBoard::isInitialized() const{
+        for(std::size_t i = 0; i < _horizontal; i++){
+            for(std::size_t j = 0; j < _vertical; j++){
+                if(pieces[i][j] != nullptr){
+                    return false;
+                }
+            }
+        }
+        return true;
+}
 void ChessBoard::printSquares() const{
     const char char_horizontal = static_cast<char>(_horizontal+65);
     bool condition = _vertical > 9 ? true : false;
@@ -129,6 +140,10 @@ void ChessBoard::printBoard() const{
         pieces[o_x][o_y] = std::move(piece);
     }
 
+    bool ChessBoard::isPieceAt(const std::size_t o_x, const std::size_t o_y) const {
+        return pieces[o_x][o_y] != nullptr;
+    }
+
     void ChessBoard::killPiece(const std::size_t o_x, const std::size_t o_y){
         std::cout << pieces[o_x][o_y]->getName() << " at (" << o_x << ", " << o_y << ") has been slayed." << std::endl;
         pieces[o_x][o_y] = nullptr;
@@ -142,6 +157,13 @@ void ChessBoard::printBoard() const{
         } else {
             std::cout << "No piece at (" << o_x << ", " << o_y << ") to heal." << std::endl;
         }
+    }
+
+    int ChessBoard::getHealthOfPiece(const std::size_t o_x, const std::size_t o_y) const {
+        if(o_x < getHorizontal() && o_y < getVertical() && pieces[o_x][o_y] != nullptr){
+            return pieces[o_x][o_y]->getHealth();
+        }
+        return -1; // or throw an exception
     }
     void ChessBoard::damagePiece(const std::size_t o_x, const std::size_t o_y){
         if(pieces[o_x][o_y] != nullptr){
@@ -170,4 +192,11 @@ void ChessBoard::printBoard() const{
         } else {
             std::cout << "No piece at (" << o_x << ", " << o_y << ") to damage." << std::endl;
         }
+    }
+
+    int ChessBoard::getDamageOfPiece(const std::size_t o_x, const std::size_t o_y) const {
+        if(o_x < getHorizontal() && o_y < getVertical() && pieces[o_x][o_y] != nullptr){
+            return pieces[o_x][o_y]->getDamage();
+        }
+        return -1; // or throw an exception
     }

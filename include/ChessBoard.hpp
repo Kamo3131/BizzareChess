@@ -61,6 +61,12 @@ class ChessBoard{
     size getVertical() const;
 
     /**
+     * @brief Checks if container has been created but not set.
+     * @return true if container has been created but not set, false otherwise
+     */
+    bool isInitialized() const;
+
+    /**
      * @brief Sets given figure at o(x,y)
      * @param o_x x tile value
      * @param o_y y tile value
@@ -68,6 +74,13 @@ class ChessBoard{
      */
     void setPiece(const std::size_t o_x, const std::size_t o_y, std::unique_ptr<Piece> piece);
 
+    /**
+     * @brief Gets if there is a piece at given o(x,y) tile
+     * @param o_x x tile value
+     * @param o_y y tile value
+     * @return true if there is a piece at given o(x,y) tile, false otherwise
+     */
+    bool isPieceAt(const std::size_t o_x, const std::size_t o_y) const;
     /**
      * @brief Destroyes figure at given o(x,y) tile
      * @param o_x x tile value
@@ -84,6 +97,14 @@ class ChessBoard{
     void healPiece(const std::size_t o_x, const std::size_t o_y, const int health);
 
     /**
+     * @brief Gets health of piece at given o(x,y) tile
+     * @param o_x x tile value
+     * @param o_y y tile value
+     * @return health of piece at given o(x,y) tile, -1 if there is no piece at given o(x,y) tile
+     */
+    int getHealthOfPiece(const std::size_t o_x, const std::size_t o_y) const;
+    
+    /**
      * @brief Damages figure at given o(x,y) for default value
      * @param o_x x tile value
      * @param o_y y tile value
@@ -97,9 +118,17 @@ class ChessBoard{
      * @param damage value of damage
      */
     void damagePiece(const std::size_t o_x, const std::size_t o_y, const int damage);
+    /**
+     * @brief Gets damage of piece at given o(x,y) tile
+     * @param o_x x tile value
+     * @param o_y y tile value
+     * @return damage of piece at given o(x,y) tile, -1 if there is no piece at given o(x,y) tile
+     */
+    int getDamageOfPiece(const std::size_t o_x, const std::size_t o_y) const;
     private:
     const size _horizontal; //height
     const size _vertical;   //width
     std::vector<std::vector<std::unique_ptr<Piece>>> pieces; //stores figures
+
 };
 
