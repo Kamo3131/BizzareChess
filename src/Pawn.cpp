@@ -11,15 +11,15 @@ Pawn::Pawn(const Piece::Team team) : Piece(){
 }
 bool Pawn::move(const int horizontal, const int vertical){
     if(horizontal != 0){
-        return false;
+        return false; // Pawns cannot move horizontally
     } else if(vertical == 1){
-        return true;
+        return true; // Can move forward by 1 tile
     } else if(vertical == 2 && getMoveNumber() == 0){
-        return true;
+        return true; // Can move forward by 2 tiles on first move
     }
     return false;
 }
 
 bool Pawn::attack(const int horizontal, const int vertical){
-    return (horizontal==1 || horizontal==-1) && vertical==1 ? true : false;
+    return (horizontal==1 || horizontal==-1) && vertical==1 ? true : false; // Can attack diagonally by 1 tile
 }

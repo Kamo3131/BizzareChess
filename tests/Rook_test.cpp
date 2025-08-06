@@ -27,6 +27,22 @@ TEST(RookTests, MoveDiagonally) {
     EXPECT_FALSE(rook1B->move(-1, -1)) << "Rook should not be able to move diagonally!";
 }
 /**
+ * Test the Rook::move method does not allow moving in any other direction.
+ */
+TEST(RookTests, MoveInvalidDirections) {
+    std::unique_ptr<Piece> rook1B = std::make_unique<Rook>(Piece::Team::BLACK);
+    EXPECT_FALSE(rook1B->move(2, 3)) << "Rook should not be able to move this way!";
+    EXPECT_FALSE(rook1B->move(-3, 1)) << "Rook should not be able to move this way!";
+    EXPECT_FALSE(rook1B->move(1, -2)) << "Rook should not be able to move this way!";
+}
+/**
+ * Test the Rook::move method does not allow moving if no movement is specified.
+ */
+TEST(RookTests, MoveNoMovement) {
+    std::unique_ptr<Piece> rook1B = std::make_unique<Rook>(Piece::Team::BLACK);
+    EXPECT_FALSE(rook1B->move(0, 0)) << "Rook should not be able to move if no movement is specified!";
+}
+/**
  * Test the Rook::attack method allows attacking horizontally.
  */
 TEST(RookTests, AttackHorizontally) {
@@ -49,4 +65,20 @@ TEST(RookTests, AttackDiagonally) {
     std::unique_ptr<Piece> rook1B = std::make_unique<Rook>(Piece::Team::BLACK);
     EXPECT_FALSE(rook1B->attack(2, 2)) << "Rook should not be able to attack diagonally!";
     EXPECT_FALSE(rook1B->attack(-1, -1)) << "Rook should not be able to attack diagonally!";
+}
+/**
+ * Test the Rook::attack method does not allow attacking in any other direction.
+ */
+TEST(RookTests, AttackInvalidDirections) {
+    std::unique_ptr<Piece> rook1B = std::make_unique<Rook>(Piece::Team::BLACK);
+    EXPECT_FALSE(rook1B->attack(2, 3)) << "Rook should not be able to attack this way!";
+    EXPECT_FALSE(rook1B->attack(-3, 1)) << "Rook should not be able to attack this way!";
+    EXPECT_FALSE(rook1B->attack(1, -2)) << "Rook should not be able to attack this way!";
+}
+/**
+ * Test the Rook::attack method does not allow attacking if no attack is specified.
+ */
+TEST(RookTests, AttackNoAttack) {
+    std::unique_ptr<Piece> rook1B = std::make_unique<Rook>(Piece::Team::BLACK);
+    EXPECT_FALSE(rook1B->attack(0, 0)) << "Rook should not be able to attack if no attack is specified!";
 }
