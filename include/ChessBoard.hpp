@@ -3,6 +3,12 @@
 #include <string>
 #include <memory>
 #include "Piece.hpp"
+#include "King.hpp"
+#include "Knight.hpp"
+#include "Queen.hpp"
+#include "Rook.hpp"
+#include "Bishop.hpp"
+#include "Pawn.hpp"
 
 
 class ChessBoard{

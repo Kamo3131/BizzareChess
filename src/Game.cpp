@@ -1,0 +1,143 @@
+#include "Game.hpp"
+#include <string>
+#include <sstream>
+#include <algorithm>
+
+Game::Game() : _turn{0}, _chessBoard{8, 8}{
+    _chessBoard.initPieces();
+}
+
+Game::Game(const size horizontal, const size vertical) : _turn{0}, _chessBoard{horizontal, vertical}{
+    _chessBoard.initPieces();
+}
+Game::Game(const int turn, ChessBoard&& chessBoard) : _turn{turn}, _chessBoard{std::move(chessBoard)}{
+    
+}
+void Game::printCurrentGameState() const{
+    _chessBoard.printBoard();
+    std::cout << "Turn: " << _turn << std::endl;
+}
+bool Game::surrender(){
+    std::string command;
+    std::cout << "Are you sure you want to surrender?\n"<<
+    "y) Yes\t   n) No\n";
+    std::cin >> command;
+    std::for_each(command.begin(), command.end(), [](char &c) {
+            c = toupper(c); // Convert to uppercase
+    });
+    if(command == "Y" || command == "YES"){
+        std::cout << "You have surrendered...\n";
+        exit(EXIT_SUCCESS);
+        return false;
+    }
+    return true;
+}
+
+bool Game::quitGame(){
+    std::string command;
+    std::cout << "Are you sure you want to quit the game?\n"<<
+    "y) Yes\t   n) No\n";
+    std::cin >> command;
+    std::for_each(command.begin(), command.end(), [](char &c) {
+            c = toupper(c); // Convert to uppercase
+    });
+    if(command == "Y" || command == "YES"){
+        std::cout << "You have quit the game...\n";
+        exit(EXIT_SUCCESS);
+        return false;
+    }
+    return true;
+}
+
+void Game::movePiece(){
+    std::cout << "Choose piece you want to move! Write code of the square it's standing at!\n";
+    std::cout << "Example of squares: 1A, 03B, 6D. Make sure it's not out of bounds!\n";
+    std::string square;
+    size o_y, o_x;
+    while(true){
+        std::cout << "Enter square: ";
+        std::cin >> square;
+        std::for_each(square.begin(), square.end(), [](char &c) {
+            c = toupper(c); // Convert to uppercase
+        });
+        if(square == "C" || square == "CANCEL" || square == "CANCEL MOVE"){
+            std::cout << "Cancelling...\n";
+            return;
+        }
+        std::stringstream ss(square);
+        char temp_letter;
+        ss >> o_y >> temp_letter;
+        o_y = static_cast<size>(o_y - 1); // Convert to 0-based index
+        o_x = static_cast<size>(toupper(temp_letter) - 65); // Convert letter to index
+        if(o_x >= _chessBoard.getHorizontal() || o_y >= _chessBoard.getVertical()){
+            std::cout << "Invalid square! Try again.\n";
+            continue;
+        }
+        if(!_chessBoard.isPieceAt(o_x, o_y)){
+            std::cout << "There is no piece at square " << square << "! Try again.\n";
+            continue;
+        }
+        break;
+    }
+    std::cout << "Piece to move: " << square << std::endl;
+    std::cout << "Now, choose where should this piece move to!\n";
+    int x, y;
+    std::string target_square;
+    while(true){
+        std::cout << "Enter square: ";
+        std::cin >> target_square;
+        std::for_each(target_square.begin(), target_square.end(), [](char &c) {
+            c = toupper(c); // Convert to uppercase
+        });
+        if(target_square == "C" || target_square == "CANCEL" || target_square == "CANCEL MOVE"){
+            std::cout << "Cancelling...\n";
+            return;
+        }
+        std::stringstream ss_target(target_square);
+        char temp_letter;
+        ss_target >> y >> temp_letter;
+        y = static_cast<int>(target_square[0]-'1') - o_y;
+        x = static_cast<int>(toupper(target_square[1]-65)) - o_x;
+        if(o_x+x >= _chessBoard.getHorizontal() || o_y+y >= _chessBoard.getVertical()){
+            std::cout << "Invalid square! Try again.\n";
+            continue;
+        }
+        break;
+    }
+    std::cout << o_x << " " << o_y << " " << x << " " << y << std::endl;
+    _chessBoard.move(o_x, o_y, x, y);
+    nextTurn();
+}
+void Game::gameLoop(){
+    bool temp = true;
+    while(temp){
+        printCurrentGameState();
+
+        std::string command;
+        std::cout << "Choose next command:\n"<<
+        "s) Surrender\t   m) Move\t  q) Quit\n";
+
+        std::cin >> command;
+        std::for_each(command.begin(), command.end(), [](char &c) {
+            c = toupper(c); // Convert to uppercase
+        });
+        if(command == "S" || command == "SURRENDER" || command == "SURENDER"){
+            temp = surrender();
+        }
+        else if(command == "Q" || command == "QUIT"){
+            temp = quitGame();
+        }
+        else if(command == "M" || command == "MOVE"){
+            movePiece();
+        }
+        else{
+            std::cout << "Invalid command! Try again.\n";
+        }
+    }
+}
+void Game::nextTurn(){
+    _turn++;
+}
+void Game::previousTurn(){
+    _turn--;
+}

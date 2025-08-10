@@ -13,6 +13,14 @@ void ChessBoard::init(){
 }
 
 void ChessBoard::initPieces(){
+    auto pawn1W = std::make_unique<Pawn>(Piece::Team::WHITE);
+    auto pawn1B = std::make_unique<Pawn>(Piece::Team::BLACK);
+    setPiece(1, 1, std::move(pawn1W));
+    setPiece(2, 3, std::move(pawn1B));
+    auto rook1W = std::make_unique<Rook>(Piece::Team::WHITE);
+    setPiece(7, 1, std::move(rook1W));
+    auto rook1B = std::make_unique<Rook>(Piece::Team::BLACK);
+    setPiece(7, 8, std::move(rook1B));
 }
 ChessBoard::ChessBoard() : _horizontal{8}, _vertical{8}{
     init();
