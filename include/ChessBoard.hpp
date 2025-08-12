@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include <vector>
 #include <string>
 #include <memory>
@@ -38,12 +39,12 @@ class ChessBoard{
     /**
      * @brief Displays codes of the squares. Does not take parameters.
      */
-    void printSquares() const;
+    void printSquares(std::ostream& os = std::cout) const;
 
     /**
      * @brief Displays current state of chessboard.
      */
-    void printBoard() const;
+    void printBoard(std::ostream& os = std::cout) const;
 
     /**
      * @brief Moves figure by x,y.

@@ -5,8 +5,9 @@
 #include "Rook.hpp"
 
 int main(){
-    Game game(8, 11);
+    Game game;
     game.gameLoop();
+    
 
 
 

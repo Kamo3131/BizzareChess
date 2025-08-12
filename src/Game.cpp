@@ -1,4 +1,5 @@
 #include "Game.hpp"
+#include <iostream>
 #include <string>
 #include <sstream>
 #include <algorithm>
@@ -13,40 +14,55 @@ Game::Game(const size horizontal, const size vertical) : _turn{0}, _chessBoard{h
 Game::Game(const int turn, ChessBoard&& chessBoard) : _turn{turn}, _chessBoard{std::move(chessBoard)}{
     
 }
-void Game::printCurrentGameState() const{
-    _chessBoard.printBoard();
-    std::cout << "Turn: " << _turn << std::endl;
+void Game::printCurrentGameState(std::ostream& os) const{
+    _chessBoard.printBoard(os);
+    os << "Turn: " << _turn << std::endl;
 }
 bool Game::surrender(){
     std::string command;
     std::cout << "Are you sure you want to surrender?\n"<<
     "y) Yes\t   n) No\n";
-    std::cin >> command;
-    std::for_each(command.begin(), command.end(), [](char &c) {
-            c = toupper(c); // Convert to uppercase
-    });
-    if(command == "Y" || command == "YES"){
-        std::cout << "You have surrendered...\n";
-        exit(EXIT_SUCCESS);
-        return false;
-    }
-    return true;
+    while(true){
+        std::cout << "Enter command: ";
+        std::cin >> command;
+        std::for_each(command.begin(), command.end(), [](char &c) {
+                c = toupper(c); // Convert to uppercase
+        });
+        if(command == "Y" || command == "YES"){
+            std::cout << "You have surrendered...\n";
+            exit(EXIT_SUCCESS);
+            return false;
+        } else if(command == "N" || command == "NO" || command == "NOPE" || command == "NIE" || command == "C" || command == "CANCEL" || command == "CANCEL SURRENDER"){
+            std::cout << "You have not surrendered.\n";
+            return true;
+        } else {
+            std::cout << "Invalid command! Try again.\n";
+        }
+}
+    
 }
 
 bool Game::quitGame(){
     std::string command;
     std::cout << "Are you sure you want to quit the game?\n"<<
     "y) Yes\t   n) No\n";
-    std::cin >> command;
-    std::for_each(command.begin(), command.end(), [](char &c) {
-            c = toupper(c); // Convert to uppercase
-    });
-    if(command == "Y" || command == "YES"){
-        std::cout << "You have quit the game...\n";
-        exit(EXIT_SUCCESS);
-        return false;
-    }
-    return true;
+    while(true){
+        std::cout << "Enter command: ";
+        std::cin >> command;
+        std::for_each(command.begin(), command.end(), [](char &c) {
+                c = toupper(c); // Convert to uppercase
+        });
+        if(command == "Y" || command == "YES"){
+            std::cout << "You have quit the game...\n";
+            exit(EXIT_SUCCESS);
+            return false;
+        } else if(command == "N" || command == "NO" || command == "NOPE" || command == "NIE" || command == "C" || command == "CANCEL" || command == "CANCEL QUIT"){
+            std::cout << "You have not quit the game.\n";
+            return true;
+        } else {
+            std::cout << "Invalid command! Try again.\n";
+        }
+}
 }
 
 void Game::movePiece(){
@@ -104,7 +120,7 @@ void Game::movePiece(){
         }
         break;
     }
-    std::cout << o_x << " " << o_y << " " << x << " " << y << std::endl;
+    // std::cout << o_x << " " << o_y << " " << x << " " << y << std::endl;
     _chessBoard.move(o_x, o_y, x, y);
     nextTurn();
 }
@@ -140,4 +156,10 @@ void Game::nextTurn(){
 }
 void Game::previousTurn(){
     _turn--;
+}
+int Game::getTurn() const {
+    return _turn;
+}
+const ChessBoard& Game::getChessBoard() const {
+    return _chessBoard;
 }

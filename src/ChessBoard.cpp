@@ -45,7 +45,7 @@ bool ChessBoard::isInitialized() const{
         }
         return true;
 }
-void ChessBoard::printSquares() const{
+void ChessBoard::printSquares(std::ostream& os) const{
     const char char_horizontal = static_cast<char>(_horizontal+65);
     bool condition = _vertical > 9 ? true : false;
     for(int i = _vertical; i>0; i--){
@@ -57,17 +57,16 @@ void ChessBoard::printSquares() const{
                     } else{
                         ss << c << i;
                     }
-                    std::cout << std::setw(4) << ss.str() << " ";
+                    os << std::setw(4) << ss.str() << " ";
                 } else{
                     ss << c << i;
-                    std::cout << ss.str() << " ";
+                    os << ss.str() << " ";
                 }
             }
-            std::cout << std::endl;
+            os << std::endl;
         }
     }
-void ChessBoard::printBoard() const{
-    //Tu jest coś zepsute, NAPRAWIĆ!
+void ChessBoard::printBoard(std::ostream& os) const{
         for(int i = _vertical-1; i>-2; i--){
             for(int j = -1; j < static_cast<int>(_horizontal); j++){
                 std::ostringstream ss;
@@ -93,11 +92,11 @@ void ChessBoard::printBoard() const{
                         ss << "?|"; // Unknown team
                     };
                 }
-                std::cout << ss.str();
+                os << ss.str();
             }
-            std::cout << std::endl;
+            os << std::endl;
         }
-        std::cout << std::endl;
+        os << std::endl;
     }
 
     void ChessBoard::move(const std::size_t o_x, const std::size_t o_y, const int x, const int y){

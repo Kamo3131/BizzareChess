@@ -27,7 +27,7 @@ class Game{
     /**
      * @brief Prints current game state, including chessboard state and turn number.
      */
-    void printCurrentGameState() const;
+    void printCurrentGameState(std::ostream& os = std::cout) const;
     /**
      * @brief main game loop, handles user input and game commands.
      * @details Displays current game state, prompts for commands, and processes them.
@@ -57,6 +57,16 @@ class Game{
      * @details This function is a placeholder for future implementation.
      */
     void previousTurn();
+    /**
+     * @brief Gets the current turn number.
+     * @return Current turn number.
+     */
+    int getTurn() const;
+    /**
+     * @brief Gets the chessboard.
+     * @return Reference to the chessboard.
+     */
+    const ChessBoard& getChessBoard() const;
     private:
     int _turn;
     ChessBoard _chessBoard;
