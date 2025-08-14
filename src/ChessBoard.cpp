@@ -13,14 +13,30 @@ void ChessBoard::init(){
 }
 
 void ChessBoard::initPieces(){
-    auto pawn1W = std::make_unique<Pawn>(Piece::Team::WHITE);
-    auto pawn1B = std::make_unique<Pawn>(Piece::Team::BLACK);
-    setPiece(1, 1, std::move(pawn1W));
-    setPiece(2, 3, std::move(pawn1B));
-    auto rook1W = std::make_unique<Rook>(Piece::Team::WHITE);
-    setPiece(7, 1, std::move(rook1W));
-    auto rook1B = std::make_unique<Rook>(Piece::Team::BLACK);
-    setPiece(7, 8, std::move(rook1B));
+
+    for(int i = 0; i < 8; i++){
+        setPiece(i, 1, std::make_unique<Pawn>(Piece::Team::WHITE));
+        setPiece(i, 6, std::make_unique<Pawn>(Piece::Team::BLACK));
+    }
+    setPiece(0, 0, std::make_unique<Rook>(Piece::Team::WHITE));
+    setPiece(7, 0, std::make_unique<Rook>(Piece::Team::WHITE));
+    setPiece(0, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+    setPiece(7, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+
+    setPiece(1, 0, std::make_unique<Knight>(Piece::Team::WHITE));
+    setPiece(6, 0, std::make_unique<Knight>(Piece::Team::WHITE));
+    setPiece(1, 7, std::make_unique<Knight>(Piece::Team::BLACK));
+    setPiece(6, 7, std::make_unique<Knight>(Piece::Team::BLACK));
+
+    setPiece(2, 0, std::make_unique<Bishop>(Piece::Team::WHITE));
+    setPiece(5, 0, std::make_unique<Bishop>(Piece::Team::WHITE));
+    setPiece(2, 7, std::make_unique<Bishop>(Piece::Team::BLACK));
+    setPiece(5, 7, std::make_unique<Bishop>(Piece::Team::BLACK));
+
+    setPiece(3, 0, std::make_unique<Queen>(Piece::Team::WHITE));
+    setPiece(4, 0, std::make_unique<King>(Piece::Team::WHITE));
+    setPiece(3, 7, std::make_unique<Queen>(Piece::Team::BLACK));
+    setPiece(4, 7, std::make_unique<King>(Piece::Team::BLACK));
 }
 ChessBoard::ChessBoard() : _horizontal{8}, _vertical{8}{
     init();
@@ -83,14 +99,25 @@ void ChessBoard::printBoard(std::ostream& os) const{
                 } else if(pieces[j][i]==nullptr){
                     ss << "  |";
                 } else if(pieces[j][i]!=nullptr){
-                    ss << (pieces[j][i]->getName())[0];
-                    if(pieces[j][i]->getTeam() == Piece::Team::WHITE){
-                        ss << "W|";
-                    } else if(pieces[j][i]->getTeam() == Piece::Team::BLACK){
-                        ss << "B|";
-                    } else {
-                        ss << "?|"; // Unknown team
-                    };
+                    if(pieces[j][i]->getName().substr(0, 6) != "Knight"){
+                        ss << (pieces[j][i]->getName())[0];
+                        if(pieces[j][i]->getTeam() == Piece::Team::WHITE){
+                            ss << "W|";
+                        } else if(pieces[j][i]->getTeam() == Piece::Team::BLACK){
+                            ss << "B|";
+                        } else {
+                            ss << "?|"; // Unknown team
+                        };
+                    } else{
+                        ss << "N";
+                        if(pieces[j][i]->getTeam() == Piece::Team::WHITE){
+                            ss << "W|";
+                        } else if(pieces[j][i]->getTeam() == Piece::Team::BLACK ){
+                            ss << "B|";
+                        } else {
+                            ss << "?|"; // Unknown team
+                        };
+                    }
                 }
                 os << ss.str();
             }
@@ -124,11 +151,50 @@ void ChessBoard::printBoard(std::ostream& os) const{
                 pieces[o_x+x][o_y+y] = std::move(pieces[o_x][o_y]);
             }
         } 
-        else{
+        else if(canCastle(o_x, o_y, x, y)){
+            std::cout << pieces[o_x][o_y]->getName() << " is castling with " << pieces[o_x+x][o_y+y]->getName() << " at (" << o_x+x << ", " << o_y+y << ")." << std::endl;
+            castling(o_x, o_x+x);
+        }
+        else {
             std::cout << pieces[o_x][o_y]->getName() << " cannot be moved to this square." << std::endl;
         }
     }
 
+    bool ChessBoard::canCastle(const std::size_t o_x, const std::size_t o_y, const int x, const int y) const {
+        if(pieces[o_x][o_y]->getType() != Piece::Type::KING || pieces[o_x+x][o_y+y]->getType() != Piece::Type::ROOK){
+            std::cerr << "Error: Castling can only be performed with a King and a Rook." << std::endl;
+            return false;
+        }
+        if(pieces[o_x+x][o_y+y]->getMoveNumber() > 0 || pieces[o_x][o_y]->getMoveNumber() > 0){
+            std::cerr << "Error: Castling cannot be performed as either the King or the Rook has already moved." << std::endl;
+            return false;
+        }
+        bool direction = (x > 0) ? true : false;
+        int start_x = static_cast<int>(o_x) + (direction ? 1 : -1);
+        int end_x = static_cast<int>(o_x) + x;
+        for(; direction ? start_x < end_x : start_x > end_x; start_x += direction ? 1 : -1){
+            if(pieces[start_x][o_y] != nullptr){
+                std::cout << "Cannot castle, there is a piece at (" << start_x << ", " << o_y << ")." << std::endl;
+                return false;
+            }
+        }
+        return true;
+
+    }
+    void ChessBoard::castling(const std::size_t k_x, const std::size_t r_x){
+        if(r_x < k_x){
+            pieces[k_x][0] -> increaseMoveNumber();
+            pieces[k_x-2][0] = std::move(pieces[k_x][0]);
+            pieces[k_x-1][0] = std::move(pieces[r_x][0]);
+        } else if(r_x > k_x){
+            pieces[k_x][0] -> increaseMoveNumber();
+            pieces[k_x+2][0] = std::move(pieces[k_x][0]);
+            pieces[k_x+1][0] = std::move(pieces[r_x][0]);
+        } else {
+            std::cerr << "Error: Invalid castling move." << std::endl;
+        }
+
+    }
     void ChessBoard::setPiece(const std::size_t o_x, const std::size_t o_y, std::unique_ptr<Piece> piece){
         if(o_x >= _horizontal || o_y >= _vertical){
             std::cerr << "Error: Attempt to set piece out of bounds at (" << o_x << ", " << o_y << ")." << std::endl;

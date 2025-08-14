@@ -218,3 +218,51 @@ TEST(ChessBoardTests, DamagePieceByCustomValueKillsWithTwoHealth){
     board.damagePiece(0, 0, 2); // Damage by 2
     EXPECT_FALSE(board.isPieceAt(0, 0)) << "Piece should not be at (0, 0) after being killed!";
 }
+
+/**
+ * Test the ChessBoard::castling method performs castling correctly to the right.
+ */
+TEST(ChessBoardTests, CastlingRight) {
+    ChessBoard board;
+    std::unique_ptr<Piece> king = std::make_unique<King>(Piece::Team::WHITE);
+    std::unique_ptr<Piece> rook = std::make_unique<Rook>(Piece::Team::WHITE);
+    board.setPiece(4, 0, std::move(king)); // Place king at e1
+    board.setPiece(7, 0, std::move(rook)); // Place rook at h1
+    board.castling(4, 7); // Perform castling
+    EXPECT_FALSE(board.isPieceAt(4, 0)) << "King should not be at e1 after castling!";
+    EXPECT_TRUE(board.isPieceAt(6, 0)) << "King should be at g1 after castling!";
+    EXPECT_FALSE(board.isPieceAt(7, 0)) << "Rook should not be at h1 after castling!";
+    EXPECT_TRUE(board.isPieceAt(5, 0)) << "Rook should be at f1 after castling!";
+}
+/**
+ * Test the ChessBoard::castling method performs castling correctly to the left.
+ */
+TEST(ChessBoardTests, CastlingLeft) {
+    ChessBoard board;
+    std::unique_ptr<Piece> king = std::make_unique<King>(Piece::Team::WHITE);
+    std::unique_ptr<Piece> rook = std::make_unique<Rook>(Piece::Team::WHITE);
+    board.setPiece(4, 0, std::move(king)); // Place king at e1
+    board.setPiece(0, 0, std::move(rook)); // Place rook at a1
+    board.castling(4, 0); // Perform castling
+    EXPECT_FALSE(board.isPieceAt(4, 0)) << "King should not be at e1 after castling!";
+    EXPECT_TRUE(board.isPieceAt(2, 0)) << "King should be at c1 after castling!";
+    EXPECT_FALSE(board.isPieceAt(0, 0)) << "Rook should not be at a1 after castling!";
+    EXPECT_TRUE(board.isPieceAt(3, 0)) << "Rook should be at d1 after castling!";
+}
+
+/**
+ * Test the ChessBoard::castling method does not allow castling if there are pieces in between.
+ */
+TEST(ChessBoardTests, CastlingWithPiecesInBetween) {
+    ChessBoard board;
+    std::unique_ptr<Piece> king = std::make_unique<King>(Piece::Team::WHITE);
+    std::unique_ptr<Piece> rook = std::make_unique<Rook>(Piece::Team::WHITE);
+    std::unique_ptr<Piece> pawn = std::make_unique<Pawn>(Piece::Team::WHITE);
+    board.setPiece(4, 0, std::move(king)); // Place king at e1
+    board.setPiece(7, 0, std::move(rook)); // Place rook at h1
+    board.setPiece(5, 0, std::move(pawn)); // Place pawn at f1
+    board.move(4, 0, 7, 0); // Attempt to perform castling
+    EXPECT_TRUE(board.isPieceAt(4, 0)) << "King should still be at e1 after failed castling!";
+    EXPECT_TRUE(board.isPieceAt(7, 0)) << "Rook should still be at h1 after failed castling!";
+    EXPECT_TRUE(board.isPieceAt(5, 0)) << "Pawn should still be at f1 after failed castling!";
+}

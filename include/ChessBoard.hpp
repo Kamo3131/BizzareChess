@@ -56,6 +56,24 @@ class ChessBoard{
     void move(const std::size_t o_x, const std::size_t o_y, const int x, const int y);
 
     /**
+     * @brief Checks if castling is possible.
+     * @param o_x original x tile value
+     * @param o_y original y tile value
+     * @param x shift from original x (positive values to right, negative to left)
+     * @param y shift from original y (positive values to top, negative to bottom)
+     * @return true if castling is possible, false otherwise
+     */
+    bool canCastle(const std::size_t o_x, const std::size_t o_y, const int x, const int y) const;
+    /**
+     * @brief Moves king by 2 tiles and rook jumps over king.
+     * @param k_x king's horizontal position.
+     * @param r_x rook's horizontal position.
+     * @note: This function assumes that the king and rook are on the same row.
+     */
+    void castling(const std::size_t k_x, const std::size_t r_x);
+    void pawnPromotion(const std::size_t o_x, const std::size_t o_y);
+    void enPassant(const std::size_t o_x, const std::size_t o_y);
+    /**
      * @brief Return hotizpntal length
      * @return horizontal lenght
      */
