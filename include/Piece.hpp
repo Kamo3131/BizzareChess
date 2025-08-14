@@ -20,6 +20,18 @@ struct Piece{
         BLACK
     };
     /**
+     * @brief Enum representing the type of piece.
+     * This can be used for identification or logic within the game.
+     */
+    enum Type{
+        KING,
+        QUEEN,
+        ROOK,
+        BISHOP,
+        KNIGHT,
+        PAWN
+    };
+    /**
      * @brief Default constructor. Initializes a piece with default values:
      * name "unknown", damage 1, and health 1.
      */
@@ -121,6 +133,16 @@ struct Piece{
      * @param team The team to which the piece belongs.
      */
     void setTeam(const Team team);
+    /**
+     * @brief Gets the type of the piece.
+     * @return The type of the piece, which can be used for identification or logic.
+     */
+    Type getType() const;
+    /**
+     * @brief Sets the type of the piece.
+     * @param type The type of the piece, which can be used for identification or logic.
+     */
+    void setType(const Type type);
     private:
     std::string _name; //The name of the piece
     int _move_number = 0; // Tracks the number of moves made by the piece
@@ -130,5 +152,5 @@ struct Piece{
     int _damage; // Default damage value, can be overridden by derived classes
     Team _team; // The team to which the piece belongs, can be used for game logic
     int _health; // Current health value, can be overridden by derived classes
-    
+    Type _type; // Type of the piece, can be used for identification or logic
 };

@@ -3,6 +3,7 @@
 #include <sstream>
 std::size_t Rook::amount = 0;
 Rook::Rook(const Piece::Team team) : Piece(){
+    setType(Piece::Type::ROOK);
     setTeam(team);
     std::ostringstream ss;
     ss << "Rook(" << amount << ")";

@@ -87,3 +87,11 @@ TEST(KingTests, AttackNoMovement) {
     std::unique_ptr<Piece> king1B = std::make_unique<King>(Piece::Team::BLACK);
     EXPECT_FALSE(king1B->attack(0, 0)) << "King should not be able to attack if no movement is specified!";
 }
+
+/**
+ * Test the King type is correctly set.
+ */
+TEST(KingTests, TypeIsKing) {
+    std::unique_ptr<Piece> king1B = std::make_unique<King>(Piece::Team::BLACK);
+    EXPECT_EQ(king1B->getType(), Piece::Type::KING) << "King type should be KING!";
+}

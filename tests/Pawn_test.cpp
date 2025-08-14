@@ -70,3 +70,10 @@ TEST(PawnTests, AttackDiagonallyBackwards) {
     EXPECT_FALSE(pawn1B->attack(1, -1)) << "Pawn should not be able to attack diagonally backwards!";
     EXPECT_FALSE(pawn1B->attack(-1, -1)) << "Pawn should not be able to attack diagonally backwards!";
 }
+/**
+ * Test the Pawn type is correctly set.
+ */
+TEST(PawnTests, TypeIsPawn) {
+    std::unique_ptr<Piece> pawn1B = std::make_unique<Pawn>(Piece::Team::BLACK);
+    EXPECT_EQ(pawn1B->getType(), Piece::Type::PAWN) << "Pawn type should be PAWN!";
+}

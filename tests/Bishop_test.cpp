@@ -85,3 +85,10 @@ TEST(BishopTests, AttackNoMovement) {
     std::unique_ptr<Piece> bishop1B = std::make_unique<Bishop>(Piece::Team::BLACK);
     EXPECT_FALSE(bishop1B->attack(0, 0)) << "Bishop should not be able to attack if no movement is specified!";
 }
+/**
+ * Test the Bishop type is correctly set.
+ */
+TEST(BishopTests, TypeIsBishop) {
+    std::unique_ptr<Piece> bishop1B = std::make_unique<Bishop>(Piece::Team::BLACK);
+    EXPECT_EQ(bishop1B->getType(), Piece::Type::BISHOP) << "Bishop type should be BISHOP!";
+}

@@ -3,6 +3,7 @@
 #include <sstream>
 std::size_t King::amount = 0;
 King::King(const Piece::Team team) : Piece(){
+    setType(Piece::Type::KING);
     setTeam(team);
     std::ostringstream ss;
     ss << "King(" << amount << ")";

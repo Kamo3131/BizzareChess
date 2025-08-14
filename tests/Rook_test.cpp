@@ -82,3 +82,10 @@ TEST(RookTests, AttackNoAttack) {
     std::unique_ptr<Piece> rook1B = std::make_unique<Rook>(Piece::Team::BLACK);
     EXPECT_FALSE(rook1B->attack(0, 0)) << "Rook should not be able to attack if no attack is specified!";
 }
+/**
+ * Test the Rook type is correctly set.
+ */
+TEST(RookTests, TypeIsRook) {
+    std::unique_ptr<Piece> rook1B = std::make_unique<Rook>(Piece::Team::BLACK);
+    EXPECT_EQ(rook1B->getType(), Piece::Type::ROOK) << "Rook type should be ROOK!";
+}

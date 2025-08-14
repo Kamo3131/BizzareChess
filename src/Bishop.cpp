@@ -3,6 +3,7 @@
 #include <sstream>
 std::size_t Bishop::amount = 0;
 Bishop::Bishop(const Piece::Team team) : Piece(){
+    setType(Piece::Type::BISHOP);
     setTeam(team);
     std::ostringstream ss;
     ss << "Bishop(" << amount << ")";

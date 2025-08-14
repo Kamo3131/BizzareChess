@@ -39,3 +39,9 @@ Piece::Team Piece::getTeam() const {
 void Piece::setTeam(const Team team) {
     _team = team;
 }
+Piece::Type Piece::getType() const {
+    return _type;
+}
+void Piece::setType(const Type type) {
+    _type = type;
+}
