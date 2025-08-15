@@ -99,7 +99,9 @@ void ChessBoard::printBoard(std::ostream& os) const{
                 } else if(pieces[j][i]==nullptr){
                     ss << "  |";
                 } else if(pieces[j][i]!=nullptr){
+                    // Check if the piece is a Knight
                     if(pieces[j][i]->getName().substr(0, 6) != "Knight"){
+                        // If it is not a Knight, display the first letter of the name
                         ss << (pieces[j][i]->getName())[0];
                         if(pieces[j][i]->getTeam() == Piece::Team::WHITE){
                             ss << "W|";
@@ -108,6 +110,7 @@ void ChessBoard::printBoard(std::ostream& os) const{
                         } else {
                             ss << "?|"; // Unknown team
                         };
+                        // If it is a Knight, display 'N' instead
                     } else{
                         ss << "N";
                         if(pieces[j][i]->getTeam() == Piece::Team::WHITE){
@@ -127,22 +130,27 @@ void ChessBoard::printBoard(std::ostream& os) const{
     }
 
     void ChessBoard::move(const std::size_t o_x, const std::size_t o_y, const int x, const int y){
+        // Check if the original position is within bounds
         if(o_x >= _horizontal || o_y >= _vertical){
             std::cerr << "Error: Attempt to invoke move on piece out of bounds at (" << o_x << ", " << o_y << ")." << std::endl;
             return;
         }
+        // Check if there is a piece at the original position
         if(pieces[o_x][o_y] == nullptr){
             std::cerr << "Error: No piece at (" << o_x << ", " << o_y << ") to move." << std::endl;
             return;
         }
+        // Check if the target square is within bounds
         if(o_x+x >= _horizontal || o_y+y >= _vertical){
             std::cerr << "Error: Attempt to move "<< pieces[o_x][o_y]->getName() << " out of bounds to (" << o_x+x << ", " << o_y+y << ")." << std::endl;
             return;
         }
+        // If the piece can move to the target square and there is no piece
         if(pieces[o_x][o_y]->move(x, y) && pieces[o_x+x][o_y+y] == nullptr){
             pieces[o_x][o_y]->increaseMoveNumber();
             pieces[o_x+x][o_y+y] = std::move(pieces[o_x][o_y]);
         } 
+        // If the piece can attack the target square and there is an enemy piece
         else if(pieces[o_x][o_y]->attack(x, y) && pieces[o_x+x][o_y+y] != nullptr && 
         pieces[o_x+x][o_y+y]->getTeam() != pieces[o_x][o_y]->getTeam()){
             std::cout << pieces[o_x][o_y]->getName() << " attacks " << pieces[o_x+x][o_y+y]->getName() << " at (" << o_x+x << ", " << o_y+y << ")." << std::endl;
@@ -151,6 +159,7 @@ void ChessBoard::printBoard(std::ostream& os) const{
                 pieces[o_x+x][o_y+y] = std::move(pieces[o_x][o_y]);
             }
         } 
+        // If castling can be performed
         else if(canCastle(o_x, o_y, x, y)){
             std::cout << pieces[o_x][o_y]->getName() << " is castling with " << pieces[o_x+x][o_y+y]->getName() << " at (" << o_x+x << ", " << o_y+y << ")." << std::endl;
             castling(o_x, o_x+x);
@@ -160,6 +169,17 @@ void ChessBoard::printBoard(std::ostream& os) const{
         }
     }
 
+    bool ChessBoard::canMove(const std::size_t o_x, const std::size_t o_y, const int x, const int y) const {
+        if(o_x >= _horizontal || o_y >= _vertical){
+            std::cerr << "Error: Attempt to check move on piece out of bounds at (" << o_x << ", " << o_y << ")." << std::endl;
+            return false;
+        }
+        if(pieces[o_x][o_y] == nullptr){
+            std::cerr << "Error: No piece at (" << o_x << ", " << o_y << ") to check move." << std::endl;
+            return false;
+        }
+        return pieces[o_x][o_y]->move(x, y);
+    }
     bool ChessBoard::canCastle(const std::size_t o_x, const std::size_t o_y, const int x, const int y) const {
         if(pieces[o_x][o_y]->getType() != Piece::Type::KING || pieces[o_x+x][o_y+y]->getType() != Piece::Type::ROOK){
             std::cerr << "Error: Castling can only be performed with a King and a Rook." << std::endl;
@@ -272,4 +292,10 @@ void ChessBoard::printBoard(std::ostream& os) const{
             return pieces[o_x][o_y]->getDamage();
         }
         return -1; // or throw an exception
+    }
+    Piece::Team ChessBoard::getTeamOfPiece(const std::size_t o_x, const std::size_t o_y) const{
+        if(o_x < getHorizontal() && o_y < getVertical() && pieces[o_x][o_y] != nullptr){
+            return pieces[o_x][o_y]->getTeam();
+        }
+        return Piece::Team::WHITE; // or throw an exception, or return a default value
     }

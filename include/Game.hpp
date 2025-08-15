@@ -39,6 +39,20 @@ class Game{
      */
     void movePiece();
     /**
+     * @brief Moves a piece on the chessboard.
+     * @param square The square to move the piece from, in the format "x y" (e.g., "2 A").
+     * @details Validates the input square, checks if a piece exists at that square,
+     */
+    void movePiece(std::string square); // Yet to be implemented
+    /**
+     * @brief Selects a target square for the piece to move to.
+     * @param o_x Original x coordinate of the piece.
+     * @param o_y Original y coordinate of the piece.
+     * @details Prompts user to select a target square, validates input, and performs the move.
+     * @note: This method assumes is intended to be used after a piece has been selected with movePiece() or it's alternatives.
+     */
+    void selectTargetSquare(std::size_t o_x, std::size_t o_y);
+    /**
      * @brief Surrenders the game.
      * @return false if the game is surrendered, true otherwise
      */

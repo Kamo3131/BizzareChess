@@ -3,12 +3,13 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include <regex>
 
-Game::Game() : _turn{0}, _chessBoard{8, 8}{
+Game::Game() : _turn{1}, _chessBoard{8, 8}{
     _chessBoard.initPieces();
 }
 
-Game::Game(const size horizontal, const size vertical) : _turn{0}, _chessBoard{horizontal, vertical}{
+Game::Game(const size horizontal, const size vertical) : _turn{1}, _chessBoard{horizontal, vertical}{
     _chessBoard.initPieces();
 }
 Game::Game(const int turn, ChessBoard&& chessBoard) : _turn{turn}, _chessBoard{std::move(chessBoard)}{
@@ -16,12 +17,12 @@ Game::Game(const int turn, ChessBoard&& chessBoard) : _turn{turn}, _chessBoard{s
 }
 void Game::printCurrentGameState(std::ostream& os) const{
     _chessBoard.printBoard(os);
+    os << "Team: " << (_turn % 2 == 0 ? "Black" : "White") << std::endl;
     os << "Turn: " << _turn << std::endl;
 }
 bool Game::surrender(){
     std::string command;
-    std::cout << "Are you sure you want to surrender?\n"<<
-    "y) Yes\t   n) No\n";
+    
     while(true){
         std::cout << "Enter command: ";
         std::cin >> command;
@@ -44,8 +45,6 @@ bool Game::surrender(){
 
 bool Game::quitGame(){
     std::string command;
-    std::cout << "Are you sure you want to quit the game?\n"<<
-    "y) Yes\t   n) No\n";
     while(true){
         std::cout << "Enter command: ";
         std::cin >> command;
@@ -66,8 +65,6 @@ bool Game::quitGame(){
 }
 
 void Game::movePiece(){
-    std::cout << "Choose piece you want to move! Write code of the square it's standing at!\n";
-    std::cout << "Example of squares: 1A, 03B, 6D. Make sure it's not out of bounds!\n";
     std::string square;
     size o_y, o_x;
     while(true){
@@ -93,9 +90,48 @@ void Game::movePiece(){
             std::cout << "There is no piece at square " << square << "! Try again.\n";
             continue;
         }
+        if(_chessBoard.getTeamOfPiece(o_x, o_y) != (_turn % 2 == 0 ? Piece::Team::BLACK : Piece::Team::WHITE)){
+            std::cout << "You cannot move a piece that is not yours! Try again.\n";
+            continue;
+        }
         break;
     }
     std::cout << "Piece to move: " << square << std::endl;
+    selectTargetSquare(o_x, o_y);
+    return;
+}
+
+void Game::movePiece(std::string square){
+    std::for_each(square.begin(), square.end(), [](char &c) {
+        c = toupper(c); // Convert to uppercase
+    });
+    std::stringstream ss(square);
+    char temp_letter;
+    size o_x, o_y;
+    ss >> o_y >> temp_letter;
+    o_y = static_cast<size>(o_y - 1); // Convert to 0-based index
+    o_x = static_cast<size>(toupper(temp_letter) - 65); // Convert letter to index
+    if(o_x >= _chessBoard.getHorizontal() || o_y >= _chessBoard.getVertical()){
+        std::cout << "Invalid square! Try again.\n";
+        movePiece();
+        return;        
+    }
+    if(!_chessBoard.isPieceAt(o_x, o_y)){
+        std::cout << "There is no piece at square " << square << "! Try again.\n";
+        movePiece();
+        return;
+    }
+    if(_chessBoard.getTeamOfPiece(o_x, o_y) != (_turn % 2 == 0 ? Piece::Team::BLACK : Piece::Team::WHITE)){
+        std::cout << "You cannot move a piece that is not yours! Try again.\n";
+        movePiece();
+        return;
+    }
+    std::cout << "Piece to move: " << square << std::endl;
+    selectTargetSquare(o_x, o_y);
+    return;
+}
+
+void Game::selectTargetSquare(std::size_t o_x, std::size_t o_y){
     std::cout << "Now, choose where should this piece move to!\n";
     int x, y;
     std::string target_square;
@@ -118,6 +154,13 @@ void Game::movePiece(){
             std::cout << "Invalid square! Try again.\n";
             continue;
         }
+        if(_chessBoard.canMove(o_x, o_y, x, y)){
+            std::cout << "Moving piece from (" << o_x << ", " << o_y << ") to (" << o_x+x << ", " << o_y+y << ").\n";
+            break;
+        } else {
+            std::cout << "Piece cannot be moved to this square! Try again.\n";
+            continue;
+        }
         break;
     }
     // std::cout << o_x << " " << o_y << " " << x << " " << y << std::endl;
@@ -137,13 +180,23 @@ void Game::gameLoop(){
         std::for_each(command.begin(), command.end(), [](char &c) {
             c = toupper(c); // Convert to uppercase
         });
+        std::regex pattern{"^(?:[0-9]|1[0-9]|2[0-5])[a-zA-Z]$"}; 
         if(command == "S" || command == "SURRENDER" || command == "SURENDER"){
+            std::cout << "Are you sure you want to surrender?\n"<<
+            "y) Yes\t   n) No\n";
             temp = surrender();
         }
         else if(command == "Q" || command == "QUIT"){
+            std::cout << "Are you sure you want to quit the game?\n"<<
+            "y) Yes\t   n) No\n";
             temp = quitGame();
         }
+        else if(std::regex_match(command, pattern)){
+            movePiece(command);
+        }
         else if(command == "M" || command == "MOVE"){
+            std::cout << "Choose piece you want to move! Write code of the square it's standing at!\n";
+            std::cout << "Example of squares: 1A, 03B, 6D. Make sure it's not out of bounds!\n";
             movePiece();
         }
         else{

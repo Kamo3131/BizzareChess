@@ -54,6 +54,15 @@ class ChessBoard{
      * @param y shift from original y (positive values to top, negative to bottom)
      */
     void move(const std::size_t o_x, const std::size_t o_y, const int x, const int y);
+    /**
+     * @brief Check if piece can move to the target square.
+     * @param o_x original x tile value
+     * @param o_y original y tile value
+     * @param x shift from original x (positive values to right, negative to left)
+     * @param y shift from original y (positive values to top, negative to bottom)
+     * @return true if piece can move to the target square, false otherwise
+     */
+    bool canMove(const std::size_t o_x, const std::size_t o_y, const int x, const int y) const;
 
     /**
      * @brief Checks if castling is possible.
@@ -150,6 +159,13 @@ class ChessBoard{
      * @return damage of piece at given o(x,y) tile, -1 if there is no piece at given o(x,y) tile
      */
     int getDamageOfPiece(const std::size_t o_x, const std::size_t o_y) const;
+    /**
+     * @brief Gets team of piece at given o(x,y) tile
+     * @param o_x x tile value
+     * @param o_y y tile value
+     * @return team of piece at given o(x,y) tile, Piece::Team::WHITE if there is no piece at given o(x,y) tile
+     */
+    Piece::Team getTeamOfPiece(const std::size_t o_x, const std::size_t o_y) const;
     private:
     const size _horizontal; //height
     const size _vertical;   //width
