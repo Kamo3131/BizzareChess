@@ -70,6 +70,9 @@ bool ChessBoard::canMove(const std::size_t o_x, const std::size_t o_y, const int
     if(enPassantAvailable(o_x, o_y, x, y)){
         return true;
     }
+    if(pieces[o_x+x][o_y+y]){
+        return pieces[o_x][o_y]->attack(x, y);
+    }
     return pieces[o_x][o_y]->move(x, y);
 }
 bool ChessBoard::canCastle(const std::size_t o_x, const std::size_t o_y, const int x, const int y) const {
