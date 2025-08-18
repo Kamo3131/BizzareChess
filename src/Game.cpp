@@ -148,8 +148,11 @@ void Game::selectTargetSquare(std::size_t o_x, std::size_t o_y){
         std::stringstream ss_target(target_square);
         char temp_letter;
         ss_target >> y >> temp_letter;
-        y = static_cast<int>(target_square[0]-'1') - o_y;
-        x = static_cast<int>(toupper(target_square[1]-65)) - o_x;
+        int target_y = target_square[0] - '1';
+        int target_x = toupper(target_square[1]) - 'A';
+
+        y = target_y - static_cast<int>(o_y);
+        x = target_x - static_cast<int>(o_x);
         if(o_x+x >= _chessBoard.getHorizontal() || o_y+y >= _chessBoard.getVertical()){
             std::cout << "Invalid square! Try again.\n";
             continue;

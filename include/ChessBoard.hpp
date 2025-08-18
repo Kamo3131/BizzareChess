@@ -80,8 +80,39 @@ class ChessBoard{
      * @note: This function assumes that the king and rook are on the same row.
      */
     void castling(const std::size_t k_x, const std::size_t r_x);
-    void pawnPromotion(const std::size_t o_x, const std::size_t o_y);
-    void enPassant(const std::size_t o_x, const std::size_t o_y);
+    /**
+     * @brief User chooses which piece pawn will be promoted to.
+     * @param o_x original x tile value
+     * @param o_y original y tile value
+     */
+    void pawnPromotionChoice(const std::size_t o_x, const std::size_t o_y);
+    /**
+     * @brief Promotes pawn at given o(x,y) tile to given type.
+     * @param o_x original x tile value
+     * @param o_y original y tile value
+     * @param type type of piece to promote to, defaults to Piece::Type::QUEEN
+     */
+    void pawnPromotion(const std::size_t o_x, const std::size_t o_y, 
+                       Piece::Type type = Piece::Type::QUEEN);
+
+    /**
+     * @brief Checks if en passant is available for the piece at o(x,y) tile.
+     * @param o_x original x tile value 
+     * @param o_y original y tile value
+     * @param x shift from original x (positive values to right, negative to left)
+     * @param y shift from original y (positive values to top, negative to bottom)
+     * @return true if en passant is available, false otherwise
+     */
+    bool enPassantAvailable(const std::size_t o_x, const std::size_t o_y, const int x, const int y) const;
+    /**
+     * @brief Performs en passant for the piece at o(x,y) tile.
+     * @param o_x original x tile value
+     * @param o_y original y tile value
+     * @param x shift from original x (positive values to right, negative to left)
+     * @param y shift from original y (positive values to top, negative to bottom)
+     * @note: Should be called only if en passant is available.
+     */
+    void enPassant(const std::size_t o_x, const std::size_t o_y, const int x, const int y);
     /**
      * @brief Return hotizpntal length
      * @return horizontal lenght

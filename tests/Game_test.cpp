@@ -93,7 +93,9 @@ TEST(GameTests, QuitGame) {
  * Test the Game::movePiece method prompts for a piece and moves it correctly.
  */
 TEST(GameTests, MovePiece) {
-    Game game;
+    ChessBoard board;
+    board.setPiece(0, 1, std::make_unique<Pawn>(Piece::Team::WHITE));
+    Game game(1, std::move(board));
     std::string test_input = "2A\n3A\n"; // Simulate moving a piece from 1A to 2B
     std::stringstream ss(test_input);
     std::streambuf* old_cin_buf = std::cin.rdbuf();

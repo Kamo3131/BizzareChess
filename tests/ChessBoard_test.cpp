@@ -73,8 +73,8 @@ TEST(ChessBoardTests, KillPieceAtTile){
  */
 TEST(ChessBoardTests, MovePiece){
     ChessBoard board;
-    std::unique_ptr<Piece> pawn1B = std::make_unique<Pawn>(Piece::Team::BLACK);
-    board.setPiece(0, 0, std::move(pawn1B));
+    std::unique_ptr<Piece> pawn1W = std::make_unique<Pawn>(Piece::Team::WHITE);
+    board.setPiece(0, 0, std::move(pawn1W));
     board.move(0, 0, 0, 1);
     EXPECT_FALSE(board.isPieceAt(0, 0)) << "Piece should not be at (0, 0) after move!";
     EXPECT_TRUE(board.isPieceAt(0, 1)) << "Piece should be at (0, 1) after move!";
@@ -101,10 +101,10 @@ TEST(ChessBoardTests, AttackEnemyPiece){
     ChessBoard board;
     std::unique_ptr<Piece> pawn1B = std::make_unique<Pawn>(Piece::Team::BLACK);
     std::unique_ptr<Piece> pawn1W = std::make_unique<Pawn>(Piece::Team::WHITE);
-    pawn1B->setDamage(1); // Set damage to 1 to ensure it can kill
-    pawn1W->setHealth(1); // Set health to 1 to ensure it can be killed
-    board.setPiece(0, 0, std::move(pawn1B));
-    board.setPiece(1, 1, std::move(pawn1W));
+    pawn1W->setDamage(1); // Set damage to 1 to ensure it can kill
+    pawn1B->setHealth(1); // Set health to 1 to ensure it can be killed
+    board.setPiece(0, 0, std::move(pawn1W));
+    board.setPiece(1, 1, std::move(pawn1B));
     board.move(0, 0, 1, 1);
     EXPECT_FALSE(board.isPieceAt(0, 0)) << "Black pawn should not be at (0, 0) after move!";
     EXPECT_TRUE(board.isPieceAt(1, 1)) << "Black pawn should be at (1, 1) after move!";
@@ -118,10 +118,10 @@ TEST(ChessBoardTests, DamageEnemyPiece){
     ChessBoard board;
     std::unique_ptr<Piece> pawn1B = std::make_unique<Pawn>(Piece::Team::BLACK);
     std::unique_ptr<Piece> pawn1W = std::make_unique<Pawn>(Piece::Team::WHITE);
-    pawn1B->setDamage(1); // Set damage to 1
-    pawn1W->setHealth(2); // Set health to 2 to ensure it can be damaged but not killed
-    board.setPiece(0, 0, std::move(pawn1B));
-    board.setPiece(1, 1, std::move(pawn1W));
+    pawn1W->setDamage(1); // Set damage to 1
+    pawn1B->setHealth(2); // Set health to 2 to ensure it can be damaged but not killed
+    board.setPiece(0, 0, std::move(pawn1W));
+    board.setPiece(1, 1, std::move(pawn1B));
     board.move(0, 0, 1, 1);
     EXPECT_TRUE(board.isPieceAt(0, 0)) << "Black pawn should be at (0, 0) after move!";
     EXPECT_TRUE(board.isPieceAt(1, 1)) << "White pawn should be at (1, 1) after move!";
@@ -265,4 +265,28 @@ TEST(ChessBoardTests, CastlingWithPiecesInBetween) {
     EXPECT_TRUE(board.isPieceAt(4, 0)) << "King should still be at e1 after failed castling!";
     EXPECT_TRUE(board.isPieceAt(7, 0)) << "Rook should still be at h1 after failed castling!";
     EXPECT_TRUE(board.isPieceAt(5, 0)) << "Pawn should still be at f1 after failed castling!";
+}
+
+/**
+ * Tests the ChessBoard::enPassant method allows a pawn to perform en passant capture.
+ */
+TEST(ChessBoardTests, EnPassantCapture) {
+    ChessBoard board;
+    std::unique_ptr<Piece> pawn1W = std::make_unique<Pawn>(Piece::Team::WHITE);
+    std::unique_ptr<Piece> pawn2B = std::make_unique<Pawn>(Piece::Team::BLACK);
+    
+    // Set up the pawns on the board
+    board.setPiece(4, 4, std::move(pawn1W));
+    board.setPiece(5, 6, std::move(pawn2B));
+    pawn1W->setDamage(1);
+    pawn2B->setHealth(1);
+    
+    // Move the black pawn two squares forward to set up en passant
+    board.move(5, 6, 5, 4); // Black pawn moves to f5
+    EXPECT_TRUE(board.isPieceAt(5, 4)) << "Black pawn should be at f5 after move!";
+    
+    // Perform en passant capture
+    board.move(4, 4, 5, 5); // White pawn captures en passant
+    EXPECT_FALSE(board.isPieceAt(5, 4)) << "Black pawn should not be at f5 after en passant!";
+    EXPECT_TRUE(board.isPieceAt(5, 5)) << "White pawn should be at f6 after en passant!";
 }
