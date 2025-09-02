@@ -109,5 +109,23 @@ TEST(GameTests, MovePiece) {
     std::cin.rdbuf(old_cin_buf);
 }
 
-
+/**
+ * Test the Game::movePiece method does not move a piece when the move is invalid.
+ */
+TEST(GameTests, MovePieceInvalidMove) {
+    ChessBoard board;
+    board.setPiece(0, 1, std::make_unique<Pawn>(Piece::Team::WHITE));
+    Game game(1, std::move(board));
+    std::string test_input = "2A\n2A\n3A\n"; // Simulate invalid move from 2A to 2A, then valid move to 3A
+    std::stringstream ss(test_input);
+    std::streambuf* old_cin_buf = std::cin.rdbuf();
+    std::cin.rdbuf(ss.rdbuf());
+    EXPECT_TRUE(game.getChessBoard().isPieceAt(0, 1)) << "Initial piece at 2A is not present!";
+    EXPECT_EQ(game.getTurn(), 1) << "Initial turn is not 1!";
+    game.movePiece();
+    EXPECT_TRUE(game.getChessBoard().isPieceAt(0, 2)) << "Piece was not moved to 3A after valid move!";
+    EXPECT_FALSE(game.getChessBoard().isPieceAt(0, 1)) << "Piece at 2A is still present after move!";
+    EXPECT_EQ(game.getTurn(), 2) << "movePiece did not advance the turn after a successful move!";
+    std::cin.rdbuf(old_cin_buf);
+}
 

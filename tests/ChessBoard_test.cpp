@@ -276,17 +276,83 @@ TEST(ChessBoardTests, EnPassantCapture) {
     std::unique_ptr<Piece> pawn2B = std::make_unique<Pawn>(Piece::Team::BLACK);
     
     // Set up the pawns on the board
-    board.setPiece(4, 4, std::move(pawn1W));
-    board.setPiece(5, 6, std::move(pawn2B));
     pawn1W->setDamage(1);
     pawn2B->setHealth(1);
+    board.setPiece(4, 4, std::move(pawn1W));
+    board.setPiece(5, 6, std::move(pawn2B));
+    
     
     // Move the black pawn two squares forward to set up en passant
-    board.move(5, 6, 5, 4); // Black pawn moves to f5
+    board.move(5, 6, 0, -2); // Black pawn moves to f5
     EXPECT_TRUE(board.isPieceAt(5, 4)) << "Black pawn should be at f5 after move!";
     
     // Perform en passant capture
-    board.move(4, 4, 5, 5); // White pawn captures en passant
+    board.move(4, 4, 1, 1); // White pawn captures en passant
     EXPECT_FALSE(board.isPieceAt(5, 4)) << "Black pawn should not be at f5 after en passant!";
     EXPECT_TRUE(board.isPieceAt(5, 5)) << "White pawn should be at f6 after en passant!";
+}
+
+/**
+ * Test the ChessBoard::canMove method returns true for a valid move.
+ */
+TEST(ChessBoardTests, CanMoveValid) {
+    ChessBoard board;
+    std::unique_ptr<Piece> pawn1W = std::make_unique<Pawn>(Piece::Team::WHITE);
+    board.setPiece(0, 1, std::move(pawn1W));
+    EXPECT_TRUE(board.canMove(0, 1, 0, 1)) << "Pawn should be able to move forward by 1!";
+    
+}
+/**
+ * Test the ChessBoard::canMove method returns true for a valid attack.
+ */
+TEST(ChessBoardTests, CanMoveAttackValid) {
+    ChessBoard board;
+    std::unique_ptr<Piece> pawn1W = std::make_unique<Pawn>(Piece::Team::WHITE);
+    board.setPiece(0, 1, std::move(pawn1W));
+    board.setPiece(1, 2, std::make_unique<Pawn>(Piece::Team::BLACK));
+    EXPECT_TRUE(board.canMove(0, 1, 1, 1)) << "Pawn should be able to attack diagonally!";
+}
+
+/**
+ * Test the ChessBoard::canMove method returns true for a valid en passant move.
+ */
+TEST(ChessBoardTests, CanMoveEnPassantValid) {
+    ChessBoard board;
+    std::unique_ptr<Piece> pawn1W = std::make_unique<Pawn>(Piece::Team::WHITE);
+    board.setPiece(0, 1, std::move(pawn1W));
+    std::unique_ptr<Pawn> pawn1B = std::make_unique<Pawn>(Piece::Team::BLACK);
+    pawn1B->setEnPassant(1, true); // Ensure en passant is possible
+    board.setPiece(1, 1, std::move(pawn1B));
+    EXPECT_TRUE(board.canMove(0, 1, 1, 1)) << "Pawn should be able to perform en passant when possible!";
+}
+/**
+ * Test the ChessBoard::canMove method returns false for an invalid move.
+ */
+TEST(ChessBoardTests, CanMoveInvalid) {
+    ChessBoard board;
+    std::unique_ptr<Piece> pawn1W = std::make_unique<Pawn>(Piece::Team::WHITE);
+    board.setPiece(0, 1, std::move(pawn1W));
+    EXPECT_FALSE(board.canMove(0, 1, 0, 0)) << "Pawn should not be able to move backwards!";
+}
+/**
+ * Test the ChessBoard::canMove method returns false for an invalid attack.
+ */
+TEST(ChessBoardTests, CanMoveAttackInvalid) {
+    ChessBoard board;
+    std::unique_ptr<Piece> pawn1W = std::make_unique<Pawn>(Piece::Team::WHITE);
+    board.setPiece(0, 1, std::move(pawn1W));
+    board.setPiece(1, 3, std::make_unique<Pawn>(Piece::Team::BLACK));
+    EXPECT_FALSE(board.canMove(0, 1, 1, 2)) << "Pawn should not be able to attack non-diagonally!";
+}
+/**
+ * Test the ChessBoard::canMove method returns false if en passant is not possible.
+ */
+TEST(ChessBoardTests, CanMoveEnPassantInvalid) {
+    ChessBoard board;
+    std::unique_ptr<Piece> pawn1W = std::make_unique<Pawn>(Piece::Team::WHITE);
+    board.setPiece(0, 1, std::move(pawn1W));
+    std::unique_ptr<Pawn> pawn1B = std::make_unique<Pawn>(Piece::Team::BLACK);
+    pawn1B->setEnPassant(0, false); // Ensure en passant is not possible
+    board.setPiece(1, 1, std::move(pawn1B));
+    EXPECT_FALSE(board.canMove(0, 1, 1, 1)) << "Pawn should not be able to perform en passant when not possible!";
 }
