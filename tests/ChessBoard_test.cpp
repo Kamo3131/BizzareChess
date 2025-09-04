@@ -356,3 +356,31 @@ TEST(ChessBoardTests, CanMoveEnPassantInvalid) {
     board.setPiece(1, 1, std::move(pawn1B));
     EXPECT_FALSE(board.canMove(0, 1, 1, 1)) << "Pawn should not be able to perform en passant when not possible!";
 }
+
+/**
+ * Test the ChessBoard::enPassantTurnUpdate method decreases the en passant turn counter correctly.
+ */
+TEST(ChessBoardTests, EnPassantTurnUpdate) {
+    ChessBoard board;
+    std::unique_ptr<Pawn> pawn1B = std::make_unique<Pawn>(Piece::Team::BLACK);
+    pawn1B->setEnPassant(2, true); // Set en passant turns to 2
+    board.setPiece(0, 6, std::move(pawn1B));
+    
+    board.enPassantTurnUpdate(Piece::Team::BLACK); // Decrease turns by 1
+    EXPECT_EQ(board.getEnPassantStatus(0, 6).first, 1) << "En passant turns should decrease to 1!";
+    
+    board.enPassantTurnUpdate(Piece::Team::BLACK); // Decrease turns by 1
+    EXPECT_EQ(board.getEnPassantStatus(0, 6).first, 0) << "En passant turns should decrease to 0!";
+    EXPECT_FALSE(board.getEnPassantStatus(0, 6).second) << "En passant should no longer be possible!";
+
+    std::unique_ptr<Pawn> pawn1W = std::make_unique<Pawn>(Piece::Team::WHITE);
+    pawn1W->setEnPassant(2, true); // Set en passant turns to 2
+    board.setPiece(0, 1, std::move(pawn1W));
+    
+    board.enPassantTurnUpdate(Piece::Team::WHITE); // Decrease turns by 1
+    EXPECT_EQ(board.getEnPassantStatus(0, 1).first, 1) << "En passant turns should decrease to 1!";
+    
+    board.enPassantTurnUpdate(Piece::Team::WHITE); // Decrease turns by 1
+    EXPECT_EQ(board.getEnPassantStatus(0, 1).first, 0) << "En passant turns should decrease to 0!";
+    EXPECT_FALSE(board.getEnPassantStatus(0, 1).second) << "En passant should no longer be possible!";
+}

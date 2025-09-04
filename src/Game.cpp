@@ -39,8 +39,15 @@ bool Game::surrender(){
         } else {
             std::cout << "Invalid command! Try again.\n";
         }
+}   
 }
-    
+
+void Game::enPassantTurnCycle(){
+    if(_turn % 2 == 0){
+        _chessBoard.enPassantTurnUpdate(Piece::Team::BLACK);
+    } else{
+        _chessBoard.enPassantTurnUpdate(Piece::Team::WHITE);
+    }
 }
 
 bool Game::quitGame(){
@@ -173,6 +180,7 @@ void Game::selectTargetSquare(std::size_t o_x, std::size_t o_y){
 void Game::gameLoop(){
     bool temp = true;
     while(temp){
+        enPassantTurnCycle();
         printCurrentGameState();
 
         std::string command;

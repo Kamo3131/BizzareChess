@@ -129,3 +129,32 @@ TEST(GameTests, MovePieceInvalidMove) {
     std::cin.rdbuf(old_cin_buf);
 }
 
+/**
+ * Test the Game::gameLoop method decreases the en passant turn counter correctly for each team.
+ */
+TEST(GameTests, GameLoopEnPassantTurnUpdate) {
+    ChessBoard board;
+    std::unique_ptr<Pawn> pawn1W = std::make_unique<Pawn>(Piece::Team::WHITE);
+    pawn1W->setEnPassant(1, true); // Set en passant turns to 2 for white pawn
+    board.setPiece(0, 1, std::move(pawn1W));
+    std::unique_ptr<Pawn> pawn1B = std::make_unique<Pawn>(Piece::Team::BLACK);
+    pawn1B->setEnPassant(1, true); // Set en passant turns to 2 for black pawn
+    board.setPiece(1, 6, std::move(pawn1B));
+    
+    Game game(1, std::move(board));
+
+    game.enPassantTurnCycle();
+    game.nextTurn();
+    game.enPassantTurnCycle();
+    game.nextTurn();
+
+    
+    std::pair<int, bool> enPassantStatusW = game.getChessBoard().getEnPassantStatus(0, 1);
+    std::pair<int, bool> enPassantStatusB = game.getChessBoard().getEnPassantStatus(1, 6);
+    
+    EXPECT_EQ(enPassantStatusW.first, 0) << "White pawn's en passant turn counter was not decremented correctly!";
+    EXPECT_FALSE(enPassantStatusW.second) << "White pawn's en passant status was not updated correctly!";
+    
+    EXPECT_EQ(enPassantStatusB.first, 0) << "Black pawn's en passant turn counter was not decremented correctly!";
+    EXPECT_FALSE(enPassantStatusB.second) << "Black pawn's en passant status was not updated correctly!";
+}

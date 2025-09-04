@@ -72,6 +72,10 @@ class Game{
      */
     void previousTurn();
     /**
+     * @brief Decreases enpassant turn status for all pieces of playing team.
+     */
+    void enPassantTurnCycle();
+    /**
      * @brief Gets the current turn number.
      * @return Current turn number.
      */

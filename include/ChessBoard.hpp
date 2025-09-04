@@ -114,6 +114,11 @@ class ChessBoard{
      */
     void enPassant(const std::size_t o_x, const std::size_t o_y, const int x, const int y);
     /**
+     * @brief Updates en passant status for all pawns on the board each turn.
+     * Decreases the turns left for en passant and resets the ability to capture if necessary.
+     */
+    void enPassantTurnUpdate(const Piece::Team team);
+    /**
      * @brief Return hotizpntal length
      * @return horizontal lenght
      */
@@ -125,6 +130,13 @@ class ChessBoard{
      */
     size getVertical() const;
 
+    /**
+     * @brief Return enpassant status of piece at given o(x,y) tile
+     * @param o_x x tile value
+     * @param o_y y tile value
+     * @return pair of int and bool representing enpassant status, (-1, false) if there is no piece at given o(x,y) tile
+     */
+    std::pair<int, bool> getEnPassantStatus(const std::size_t o_x, const std::size_t o_y) const;
     /**
      * @brief Checks if container has been created but not set.
      * @return true if container has been created but not set, false otherwise

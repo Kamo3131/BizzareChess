@@ -53,6 +53,18 @@ std::size_t ChessBoard::getHorizontal() const{
 std::size_t ChessBoard::getVertical() const{
     return _vertical;
 }
+std::pair<int, bool> ChessBoard::getEnPassantStatus(const std::size_t o_x, const std::size_t o_y) const{
+    if(o_x > _horizontal || o_y > _vertical){
+        std::cout << "Error: Atempt to get enpassant status of piece out of bound at (" << o_x << ", " << o_y << ")\n";
+        return {-999, false};
+    }
+    if(pieces[o_x][o_y]->getType() != Piece::Type::PAWN){
+        std::cout << "Error: Enpassant status only available to pawns!";
+        return {-999, false};
+    }
+    Pawn * pawn = dynamic_cast<Pawn*>(pieces[o_x][o_y].get());
+    return {pawn->getEnPassant().first, pawn->getEnPassant().second};
+}
 
 bool ChessBoard::isInitialized() const{
         for(std::size_t i = 0; i < _horizontal; i++){
