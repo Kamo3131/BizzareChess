@@ -161,3 +161,4 @@ void ChessBoard::setPiece(const std::size_t o_x, const std::size_t o_y, std::uni
     std::cout << "Setting piece " << piece->getName() << " at (" << o_x << ", " << o_y << ")." << std::endl;
     pieces[o_x][o_y] = std::move(piece);
 }
+

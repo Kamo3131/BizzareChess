@@ -358,6 +358,69 @@ TEST(ChessBoardTests, CanMoveEnPassantInvalid) {
 }
 
 /**
+ * Test the ChessBoard::pieceOnPath method detects an allied piece on the path correctly.
+ */
+TEST(ChessBoardTests, AlliedPieceOnPath){
+    ChessBoard board;
+    board.setPiece(0, 1, std::make_unique<Rook>(Piece::Team::WHITE));
+    board.setPiece(0, 4, std::make_unique<Pawn>(Piece::Team::WHITE));
+    
+    EXPECT_TRUE(board.pieceOnPath(0, 1, 0, 5)) << "Rook should not be able to move through the Pawn!";
+}
+/**
+ * Test the ChessBoard::pieceOnPath method detects an enemy piece on the path correctly.
+ */
+TEST(ChessBoardTests, EnemyPieceOnPath){
+    ChessBoard board;
+    board.setPiece(0, 1, std::make_unique<Rook>(Piece::Team::WHITE));
+    board.setPiece(0, 4, std::make_unique<Pawn>(Piece::Team::BLACK));
+    
+    EXPECT_TRUE(board.pieceOnPath(0, 1, 0, 5)) << "Rook should not be able to move through the Pawn!";
+}
+
+/**
+ * Test the ChessBoard::pieceOnPath method detects there is no piece on the path correctly.
+ */
+TEST(ChessBoardTests, NoPieceOnPath){
+    ChessBoard board;
+    board.setPiece(0, 1, std::make_unique<Rook>(Piece::Team::WHITE));
+    
+    EXPECT_FALSE(board.pieceOnPath(0, 1, 0, 5)) << "There is no piece on the path!";
+}
+
+/**
+ * Test the ChessBoard::canMove method detects an allied piece on the path correctly.
+ */
+TEST(ChessBoardTests, CanMoveAlliedPieceOnPath){
+    ChessBoard board;
+    board.setPiece(0, 1, std::make_unique<Rook>(Piece::Team::WHITE));
+    board.setPiece(0, 4, std::make_unique<Pawn>(Piece::Team::WHITE));
+    
+    EXPECT_FALSE(board.canMove(0, 1, 0, 5)) << "Rook should not be able to move through the Pawn!";
+}
+
+/**
+ * Test the ChessBoard::canMove method detects an enemy piece on the path correctly.
+ */
+TEST(ChessBoardTests, CanMoveEnemyPieceOnPath){
+    ChessBoard board;
+    board.setPiece(0, 1, std::make_unique<Rook>(Piece::Team::WHITE));
+    board.setPiece(0, 4, std::make_unique<Pawn>(Piece::Team::BLACK));
+    
+    EXPECT_FALSE(board.canMove(0, 1, 0, 5)) << "Rook should not be able to move through the Pawn!";
+}
+
+/**
+ * Test the ChessBoard::canMove method detects there is no piece on the path correctly.
+ */
+TEST(ChessBoardTests, CanMoveNoPieceOnPath){
+    ChessBoard board;
+    board.setPiece(0, 1, std::make_unique<Rook>(Piece::Team::WHITE));
+    
+    EXPECT_TRUE(board.canMove(0, 1, 0, 5)) << "There is no piece on the path!";
+}
+
+/**
  * Test the ChessBoard::enPassantTurnUpdate method decreases the en passant turn counter correctly.
  */
 TEST(ChessBoardTests, EnPassantTurnUpdate) {

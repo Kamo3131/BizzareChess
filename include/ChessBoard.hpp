@@ -63,6 +63,18 @@ class ChessBoard{
      * @return true if piece can move to the target square, false otherwise
      */
     bool canMove(const std::size_t o_x, const std::size_t o_y, const int x, const int y) const;
+    /**
+     * @brief Checks if there is any piece on the path from original position to target position.
+     * @param o_x original x tile value
+     * @param o_y original y tile value
+     * @param x shift from original x (positive values to right, negative to left)
+     * @param y shift from original y (positive values to top, negative to bottom)
+     * @return true if there is a piece on the path, false otherwise
+     * @note: This function assumes that the move is either horizontal, vertical, or diagonal. 
+     * It does not handle knight moves. In future possible other pieces with non-linear movement could be added.
+     * @note: This function does not check the validity of the move itself, only if there are pieces blocking the path.
+     */
+    bool pieceOnPath(const std::size_t o_x, const std::size_t o_y, const int x, const int y) const;
 
     /**
      * @brief Checks if castling is possible.
@@ -116,8 +128,33 @@ class ChessBoard{
     /**
      * @brief Updates en passant status for all pawns on the board each turn.
      * Decreases the turns left for en passant and resets the ability to capture if necessary.
+     * @param team The team whose pawns' en passant status should be updated.
      */
     void enPassantTurnUpdate(const Piece::Team team);
+    /**
+     * @brief Checks and updates the king's status (check, checkmate, stalemate, nothing) for the given team.
+     * @param team The team to check for check status.
+     */
+    void kingStatusUpdate(const Piece::Team team);
+    /**
+     * @brief Checks if the given team is in check.
+     * @param team The team to check for check status.
+     * @note: This function will be used in kingStatusUpdate(), 
+     * and will result in only king and pieces able to defend him being possible to move.
+     */
+    void inCheck(const Piece::Team team);
+    /**
+     * @brief Checks if the given team is in checkmate.
+     * @param team The team to check for checkmate status.
+     * @note: This function will be used in kingStatusUpdate() and will result in game over if true.
+     */
+    void inCheckmate(const Piece::Team team);
+    /**
+     * @brief Checks if the given team is in stalemate.
+     * @param team The team to check for stalemate status.
+     * @note: This function will be used in kingStatusUpdate() and will result in game over if true.
+     */
+    void inStalemate(const Piece::Team team);
     /**
      * @brief Return hotizpntal length
      * @return horizontal lenght

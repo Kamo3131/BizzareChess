@@ -67,6 +67,14 @@ bool ChessBoard::canMove(const std::size_t o_x, const std::size_t o_y, const int
         std::cerr << "Error: No piece at (" << o_x << ", " << o_y << ") to check move." << std::endl;
         return false;
     }
+    if(pieceOnPath(o_x, o_y, x, y)){
+        // std::cout << "Cannot move, there is a piece on the path." << std::endl;
+        return false;
+    }
+    if(pieces[o_x+x][o_y+y] && pieces[o_x+x][o_y+y]->getTeam() == pieces[o_x][o_y]->getTeam()){
+        // std::cout << "Error: Cannot move, there is an allied piece on the square.\n";
+        return false;
+    }
     if(enPassantAvailable(o_x, o_y, x, y)){
         return true;
     }
@@ -180,6 +188,61 @@ bool ChessBoard::enPassantAvailable(const std::size_t o_x, const std::size_t o_y
     }
 }
 return false;
+}
+
+bool ChessBoard::pieceOnPath(const std::size_t o_x, const std::size_t o_y, const int x, const int y) const{
+    if(pieces[o_x][o_y]->getType() == Piece::Type::KNIGHT){
+        return false;
+    }
+    if(o_x == static_cast<std::size_t>(x) && o_y == static_cast<std::size_t>(y)){
+        return false;
+    }
+    int temp_x;
+    if(x > 0){
+        temp_x = 1;
+    } else if(x < 0){
+        temp_x = -1;
+    } else{
+        temp_x = 0;
+    }
+    int temp_y;
+    if(y > 0){
+        temp_y = 1;
+    } else if(y < 0){
+        temp_y = -1;
+    } else {
+        temp_y = 0;
+    }
+    int start_x = static_cast<int>(o_x) + temp_x, start_y = static_cast<int>(o_y) + temp_y;
+    int end_x = static_cast<int>(o_x) + x, end_y = static_cast<int>(o_y) + y;
+
+    if(!temp_x){
+        // std::cout << "x = "<< temp_x << std::endl;
+        for(int j = start_y; temp_y == 1 ? j < end_y : j > end_y; j+=temp_y){
+            // std::cout << "y = "<< j << "; x = " << start_x << std::endl;
+            if(pieces[start_x][j]){
+                return true;
+            }
+        }
+    }
+    if(!temp_y){
+        // std::cout << "y = " << temp_y << std::endl;
+        for(int i = start_x; temp_x == 1 ? i < end_x : i > end_x; i+=temp_x){
+            // std::cout << "x = " << i << "; y = " << start_y << std::endl;
+            if(pieces[i][start_y]){
+                return true;
+            }
+        }
+    }
+    for(int i = start_x; temp_x == 1 ? i < end_x : i > end_x; i+=temp_x){
+        for(int j = start_y; temp_y == 1 ? j < end_y : j > end_y; j+=temp_y){
+            // std::cout << "x = " << i << "; y = " << j << std::endl;
+            if(pieces[i][j]){
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 void ChessBoard::enPassant(const std::size_t o_x, const std::size_t o_y, const int x, const int y){
