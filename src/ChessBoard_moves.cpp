@@ -19,12 +19,20 @@ void ChessBoard::move(const std::size_t o_x, const std::size_t o_y, const int x,
         std::cerr << "Error: Attempt to move "<< pieces[o_x][o_y]->getName() << " out of bounds to (" << o_x+x << ", " << o_y+y << ")." << std::endl;
         return;
     }
+    //If the piece is a king, it's position has to be updated after it's move
+    Piece::Team team;
+    if(pieces[o_x][o_y]->getType() == Piece::Type::KING && pieces[o_x][o_y]->getTeam() == Piece::Team::WHITE){
+        team = Piece::Team::WHITE;
+    } else{
+        team = Piece::Team::BLACK;
+    }
     //If the piece is a pawn and can perform en passant
     if(enPassantAvailable(o_x, o_y, x, y)){
         std::cout << pieces[o_x][o_y] -> getName() << " performs en passant at (" << o_x+x << ", " << o_y+y << ")." << std::endl;
         enPassant(o_x, o_y, x, y);
         return;
     }
+    
     // If the piece can move to the target square and there is no piece
     else if(pieces[o_x][o_y]->move(x, y) && pieces[o_x+x][o_y+y] == nullptr){
         pieces[o_x][o_y]->increaseMoveNumber();
@@ -55,6 +63,11 @@ void ChessBoard::move(const std::size_t o_x, const std::size_t o_y, const int x,
     } else if(pieces[o_x+x][o_y+y]->getType() == Piece::Type::PAWN && pieces[o_x+x][o_y+y]->getTeam() == Piece::Team::BLACK && (o_y+y == 0)){
         std::cout << pieces[o_x+x][o_y+y]->getName() << " is being promoted at (" << o_x+x << ", " << o_y+y << ")." << std::endl;
         pawnPromotionChoice(o_x+x, o_y+y);
+    }
+    if(pieces[o_x+x][o_y+y]->getType() == Piece::Type::KING && pieces[o_x+x][o_y+y]->getTeam() == team && team == Piece::Team::WHITE){
+        setWhiteKingsPosition(o_x+x, o_y+y);
+    } else if(pieces[o_x+x][o_y+y]->getType() == Piece::Type::KING && pieces[o_x+x][o_y+y]->getTeam() == team && team == Piece::Team::BLACK){
+        setBlackKingsPosition(o_x+x, o_y+y);
     }
 }
 
@@ -258,18 +271,3 @@ void ChessBoard::enPassant(const std::size_t o_x, const std::size_t o_y, const i
     }
 }
 
-void ChessBoard::enPassantTurnUpdate(const Piece::Team team){
-    for(size i = 0; i < _horizontal; i++){
-        for(size j = 0; j < _vertical; j++){
-            if(pieces[i][j] && pieces[i][j]->getTeam() == team && pieces[i][j]->getType() == Piece::Type::PAWN){
-                Pawn* pawn = dynamic_cast<Pawn*>(pieces[i][j].get());
-                if(pawn->getEnPassant().first > 0){
-                    pawn->setEnPassant(pawn->getEnPassant().first - 1, pawn->getEnPassant().first - 1 > 0);
-                } else if((pawn->getEnPassant().first == 0 || (pawn->getEnPassant().first < 0 && pawn->getEnPassant().first != -999)) && 
-                          pawn->getEnPassant().second == true){
-                    pawn->setEnPassant(0, false);
-                }
-            }
-        }
-    }
-}

@@ -38,8 +38,10 @@ void ChessBoard::initPieces(){
 
     setPiece(3, 0, std::make_unique<Queen>(Piece::Team::WHITE));
     setPiece(4, 0, std::make_unique<King>(Piece::Team::WHITE));
+    setWhiteKingsPosition(4, 0);
     setPiece(3, 7, std::make_unique<Queen>(Piece::Team::BLACK));
     setPiece(4, 7, std::make_unique<King>(Piece::Team::BLACK));
+    setBlackKingsPosition(4, 7);
 }
 ChessBoard::ChessBoard() : _horizontal{8}, _vertical{8}{
     init();
