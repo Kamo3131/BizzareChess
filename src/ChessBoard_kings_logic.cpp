@@ -55,10 +55,15 @@ bool ChessBoard::kingCanMove(const Piece::Team team) const{
 }
 
 bool ChessBoard::inCheck(const Piece::Team team, const size_pair position) const{
-    bool articficial_king = false;
+    size_pair original_kings_position = position;
     if(!pieces[position.first][position.second]){
-        pieces[position.first][position.second] = std::make_unique<King>(team);
-        articficial_king = true;
+        if(team == Piece::Team::WHITE){
+            original_kings_position = getWhiteKingsPosition();
+        } else{
+            original_kings_position = getBlackKingsPosition();
+        }
+        pieces[position.first][position.second] 
+        = std::move(pieces[original_kings_position.first][original_kings_position.second]);
     }
     #if DEBUG == 1
     printBoard();
@@ -273,8 +278,9 @@ bool ChessBoard::inCheck(const Piece::Team team, const size_pair position) const
         }
     }
     
-    if(articficial_king){
-        pieces[position.first][position.second] = nullptr;
+    if(!pieces[original_kings_position.first][original_kings_position.second]){
+        pieces[original_kings_position.first][original_kings_position.second] 
+        = std::move(pieces[position.first][position.second]);
     }
     #if DEBUG == 1
     printBoard();
@@ -298,4 +304,22 @@ bool ChessBoard::inCheck(const Piece::Team team) const{
     }
 
     return inCheck(team, position);
+}
+
+bool ChessBoard::inCheckmate(const Piece::Team team) const{
+    #if DEBUG == 1
+    bool temp = false;
+    #endif
+    if(inCheck(team) && !kingCanMove(team)){
+        #if DEBUG == 1
+        std::cout << "Checkmate!\n";
+        temp = true;
+        #endif
+        return true;
+    }
+    #if DEBUG == 1
+    return temp;
+    #endif
+    return false;
+    
 }

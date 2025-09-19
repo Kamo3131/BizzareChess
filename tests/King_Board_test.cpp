@@ -250,3 +250,28 @@ TEST(KingBoardTests, CantMoveKingToASquareWithCheck){
 
     EXPECT_TRUE(board.kingCanMove(Piece::Team::WHITE)) << "King should have one valid move!";
 }
+
+/**
+ * Test the ChessBoard::inCheckmate method detects checkmate correctly.
+ */
+
+ TEST(KingBoardTests, InCheckmate){
+    ChessBoard board;
+    board.setPiece(4, 4, std::make_unique<King>(Piece::Team::WHITE));
+    board.setWhiteKingsPosition(4, 4);
+    board.setPiece(3, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(4, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(5, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+
+    EXPECT_TRUE(board.inCheckmate(Piece::Team::WHITE)) << "White King should be in checkmate!";
+ }
+
+ TEST(KingBoardTests, NotInCheckmate){
+    ChessBoard board;
+    board.setPiece(4, 4, std::make_unique<King>(Piece::Team::WHITE));
+    board.setWhiteKingsPosition(4, 4);
+    board.setPiece(3, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(5, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+
+    EXPECT_FALSE(board.inCheckmate(Piece::Team::WHITE)) << "White King should not be in checkmate!";
+}
