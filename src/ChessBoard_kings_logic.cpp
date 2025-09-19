@@ -4,7 +4,7 @@
 #include <sstream>
 #include <array> //for tests only
 
-#define DEBUG 0
+#define DEBUG 1
 
 /**
  * @brief vector from point a to point b
@@ -322,4 +322,21 @@ bool ChessBoard::inCheckmate(const Piece::Team team) const{
     #endif
     return false;
     
+}
+
+bool ChessBoard::inStalemate(const Piece::Team team) const{
+    #if DEBUG == 1
+    bool temp = false;
+    #endif
+    if(!inCheck(team) && !kingCanMove(team)){
+        #if DEBUG == 1
+        std::cout << "Stalemate!\n";
+        temp = true;
+        #endif
+        return true;
+    }
+    #if DEBUG == 1
+    return temp;
+    #endif
+    return false;
 }

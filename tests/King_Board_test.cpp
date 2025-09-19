@@ -275,3 +275,28 @@ TEST(KingBoardTests, CantMoveKingToASquareWithCheck){
 
     EXPECT_FALSE(board.inCheckmate(Piece::Team::WHITE)) << "White King should not be in checkmate!";
 }
+/**
+ * Test the ChessBoard::inStalemate method detects stalemate correctly.
+ */
+TEST(KingBoardTests, InStalemate){
+    ChessBoard board;
+    board.setPiece(4, 4, std::make_unique<King>(Piece::Team::WHITE));
+    board.setWhiteKingsPosition(4, 4);
+    board.setPiece(3, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(5, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(7, 5, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(7, 3, std::make_unique<Rook>(Piece::Team::BLACK));
+
+    EXPECT_TRUE(board.inStalemate(Piece::Team::WHITE)) << "King should be in stalemate!";
+}
+
+TEST(KingBoardTests, NotInStalemate){
+    ChessBoard board;
+    board.setPiece(4, 4, std::make_unique<King>(Piece::Team::WHITE));
+    board.setWhiteKingsPosition(4, 4);
+    board.setPiece(3, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(5, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(7, 5, std::make_unique<Rook>(Piece::Team::BLACK));
+
+    EXPECT_FALSE(board.inStalemate(Piece::Team::WHITE)) << "King should not be in stalemate!";
+}
