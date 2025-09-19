@@ -46,7 +46,7 @@ TEST(KingBoardTests, OuterSquareNoCheckVer1White){
 TEST(KingBoardTests, OuterSquareNoCheckVer2White){
     ChessBoard board;
     board.setPiece(5, 5, std::make_unique<King>(Piece::Team::WHITE));
-    board.setWhiteKingsPosition(7, 7);
+    board.setWhiteKingsPosition(5, 5);
     board.setPiece(0, 0, std::make_unique<Rook>(Piece::Team::BLACK));
     
     EXPECT_FALSE(board.inCheck(Piece::Team::WHITE)) << "White King should not be in check!";
@@ -80,7 +80,7 @@ TEST(KingBoardTests, OuterSquareNoCheckVer1Black){
 TEST(KingBoardTests, OuterSquareNoCheckVer2Black){
     ChessBoard board;
     board.setPiece(5, 5, std::make_unique<King>(Piece::Team::BLACK));
-    board.setBlackKingsPosition(7, 7);
+    board.setBlackKingsPosition(5, 5);
     board.setPiece(0, 0, std::make_unique<Rook>(Piece::Team::WHITE));
     
     EXPECT_FALSE(board.inCheck(Piece::Team::BLACK)) << "Black King should not be in check!";
@@ -211,4 +211,42 @@ TEST(KingBoardTests, InnerSquareCheckAllyOnWayBlack){
     board.setPiece(6, 4, std::make_unique<Rook>(Piece::Team::WHITE));
     
     EXPECT_FALSE(board.inCheck(Piece::Team::BLACK)) << "Black King should not be in check!";
+}
+
+/**
+ * Test the ChessBoard::canMove detects if king can move to a square with check.
+ */
+TEST(KingBoardTests, CantMoveKingToASquareWithCheck){
+    ChessBoard board;
+    board.setPiece(4, 4, std::make_unique<King>(Piece::Team::WHITE));
+    board.setWhiteKingsPosition(4, 4);
+    board.setPiece(5, 5, std::make_unique<Rook>(Piece::Team::BLACK));
+    EXPECT_FALSE(board.canMove(4, 4, 1, 0)) << "King should not be able to move to a square with check!";
+}
+
+/**
+ * Test the ChessBoard::kingCanMove detects if king has any valid moves.
+ */
+
+ TEST(KingBoardTests, KingHasNoValidMoves){
+    ChessBoard board;
+    board.setPiece(4, 4, std::make_unique<King>(Piece::Team::WHITE));
+    board.setWhiteKingsPosition(4, 4);
+    board.setPiece(3, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(5, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(7, 5, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(7, 3, std::make_unique<Rook>(Piece::Team::BLACK));
+
+    EXPECT_FALSE(board.kingCanMove(Piece::Team::WHITE)) << "King should not have any valid moves!";
+ }
+
+ TEST(KingBoardTests, KingHasValidMoves){
+    ChessBoard board;
+    board.setPiece(4, 4, std::make_unique<King>(Piece::Team::WHITE));
+    board.setWhiteKingsPosition(4, 4);
+    board.setPiece(3, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(5, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(7, 5, std::make_unique<Rook>(Piece::Team::BLACK));
+
+    EXPECT_TRUE(board.kingCanMove(Piece::Team::WHITE)) << "King should have one valid move!";
 }

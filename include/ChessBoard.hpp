@@ -15,6 +15,7 @@
 class ChessBoard{
     public:
     using size = std::size_t;
+    using size_pair = std::pair<std::size_t, std::size_t>;
     /**
      * @brief Default constructor. Initializes _horizontal and _vertical with 8.
      */
@@ -54,6 +55,7 @@ class ChessBoard{
      * @param y shift from original y (positive values to top, negative to bottom)
      */
     void move(const std::size_t o_x, const std::size_t o_y, const int x, const int y);
+    
     /**
      * @brief Check if piece can move to the target square.
      * @param o_x original x tile value
@@ -63,6 +65,17 @@ class ChessBoard{
      * @return true if piece can move to the target square, false otherwise
      */
     bool canMove(const std::size_t o_x, const std::size_t o_y, const int x, const int y) const;
+    
+    /**
+     * @brief Check if piece can attack to the target square.
+     * @param o_x original x tile value
+     * @param o_y original y tile value
+     * @param x shift from original x (positive values to right, negative to left)
+     * @param y shift from original y (positive values to top, negative to bottom)
+     * @return true if piece can move to the target square, false otherwise
+     * @note: Created mostly for use in inCheck function, so it does not loop itself.
+     */
+    bool canAttackKing(const std::size_t o_x, const std::size_t o_y, const int x, const int y) const;
     /**
      * @brief Checks if there is any piece on the path from original position to target position.
      * @param o_x original x tile value
@@ -131,30 +144,83 @@ class ChessBoard{
      * @param team The team whose pawns' en passant status should be updated.
      */
     void enPassantTurnUpdate(const Piece::Team team);
+
+    /**
+     * @brief gets white king's position on the chessboard.
+     * @returns white king's position.
+     */
+    size_pair getWhiteKingsPosition() const;
+
+    /**
+     * @brief gets black king's position on the chessboard.
+     * @returns black king's position.
+     */
+    size_pair getBlackKingsPosition() const;
+
+    /**
+     * @brief sets black king's current position.
+     * @param x x tile value
+     * @param y y tile value
+     */
+    void setBlackKingsPosition(const size x, const size y);
+
+    /**
+     * @brief sets white king's current position.
+     * @param x x tile value
+     * @param y y tile value
+     */
+    void setWhiteKingsPosition(const size x, const size y);
     /**
      * @brief Checks and updates the king's status (check, checkmate, stalemate, nothing) for the given team.
      * @param team The team to check for check status.
      */
     void kingStatusUpdate(const Piece::Team team);
     /**
+     * @brief Checks if king can move to any adjacent square.
+     * @param team The team to check for king's possible moves.
+     * @returns true if king can move to any adjacent square, false otherwise.
+     */
+    bool kingCanMove(const Piece::Team team) const;
+    
+    /**
      * @brief Checks if the given team is in check.
      * @param team The team to check for check status.
+     * @returns true if king in check, false if not.
      * @note: This function will be used in kingStatusUpdate(), 
      * and will result in only king and pieces able to defend him being possible to move.
      */
-    void inCheck(const Piece::Team team);
+    bool inCheck(const Piece::Team team) const;
+
+    /**
+     * @brief Checks if the given team is in check.
+     * @param position The position on which should stand the king (for testing purposes mostly)
+     * @returns true if king in check, false if not.
+     * @note: This function will be used in kingStatusUpdate(), 
+     * and will result in only king and pieces able to defend him being possible to move.
+     */
+    bool inCheck(const Piece::Team team, const size_pair position) const;
+
+    /**
+     * @brief Simulates king moving to another square and checks if he would be in check.
+     * @param team The team to which the king belongs.
+     * @param position The position to which the king is to be moved.
+     * @returns true if king would be in check, false otherwise.
+     */
+    // bool kingWouldBeInCheck(const Piece::Team team, const size_pair position) const;
     /**
      * @brief Checks if the given team is in checkmate.
      * @param team The team to check for checkmate status.
+     * @returns true if king in checkmate, false if not.
      * @note: This function will be used in kingStatusUpdate() and will result in game over if true.
      */
-    void inCheckmate(const Piece::Team team);
+    bool inCheckmate(const Piece::Team team) const;
     /**
      * @brief Checks if the given team is in stalemate.
      * @param team The team to check for stalemate status.
+     * @returns true if king in stalemate, false if not.
      * @note: This function will be used in kingStatusUpdate() and will result in game over if true.
      */
-    void inStalemate(const Piece::Team team);
+    bool inStalemate(const Piece::Team team) const;
     /**
      * @brief Return hotizpntal length
      * @return horizontal lenght
@@ -249,7 +315,9 @@ class ChessBoard{
     private:
     const size _horizontal; //height
     const size _vertical;   //width
-    std::vector<std::vector<std::unique_ptr<Piece>>> pieces; //stores figures
+    mutable std::vector<std::vector<std::unique_ptr<Piece>>> pieces; //stores figures
+    size_pair _whiteKingsPosition;
+    size_pair _blackKingsPosition;
 
 };
 
