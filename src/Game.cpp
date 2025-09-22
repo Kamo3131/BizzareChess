@@ -17,7 +17,9 @@ Game::Game(const int turn, ChessBoard&& chessBoard) : _turn{turn}, _chessBoard{s
 }
 void Game::printCurrentGameState(std::ostream& os) const{
     _chessBoard.printBoard(os);
+    Piece::Team team = _turn % 2 == 0 ? Piece::Team::BLACK : Piece::Team::WHITE;
     os << "Team: " << (_turn % 2 == 0 ? "Black" : "White") << std::endl;
+    _chessBoard.kingStatus(team, os);
     os << "Turn: " << _turn << std::endl;
 }
 bool Game::surrender(){

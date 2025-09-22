@@ -45,6 +45,80 @@ TEST(GameTests, PrintCurrentGameState) {
 }
 
 /**
+ * Test the Game::printCurrentGameState method prints the current game state correctly if there is a check.
+ */
+TEST(GameTests, PrintCurrentGameStatKingInCheck) {
+    ChessBoard board;
+    board.setPiece(3, 2, std::make_unique<King>(Piece::Team::BLACK));
+    board.setBlackKingsPosition(3, 2);
+    board.setPiece(3, 0, std::make_unique<Rook>(Piece::Team::WHITE));
+
+    Game game(2, std::move(board));
+    std::ostringstream oss1;
+    game.printCurrentGameState(oss1);
+    std::ostringstream oss2;
+    game.getChessBoard().printBoard(oss2);
+    EXPECT_EQ(oss1.str(), oss2.str() + "Team: Black\nKing in check!\nTurn: 2\n") << "printCurrentGameState did not print the correct game state!";
+}
+
+/**
+ * Test the Game::printCurrentGameState method prints the current game state correctly if there is a checkmate on black king.
+ */
+TEST(GameTests, PrintCurrentGameStatBlackKingInCheckmate) {
+    ChessBoard board;
+    board.setPiece(4, 4, std::make_unique<King>(Piece::Team::BLACK));
+    board.setBlackKingsPosition(4, 4);
+    board.setPiece(3, 7, std::make_unique<Rook>(Piece::Team::WHITE));
+    board.setPiece(4, 7, std::make_unique<Rook>(Piece::Team::WHITE));
+    board.setPiece(5, 7, std::make_unique<Rook>(Piece::Team::WHITE));
+
+    Game game(2, std::move(board));
+    std::ostringstream oss1;
+    game.printCurrentGameState(oss1);
+    std::ostringstream oss2;
+    game.getChessBoard().printBoard(oss2);
+    EXPECT_EQ(oss1.str(), oss2.str() + "Team: Black\nCheckmate! Team Black has lost!\nTurn: 2\n") << "printCurrentGameState did not print the correct game state!";
+}
+
+/**
+ * Test the Game::printCurrentGameState method prints the current game state correctly if there is a checkmate on white king.
+ */
+TEST(GameTests, PrintCurrentGameStatWhiteKingInCheckmate) {
+    ChessBoard board;
+    board.setPiece(4, 4, std::make_unique<King>(Piece::Team::WHITE));
+    board.setWhiteKingsPosition(4, 4);
+    board.setPiece(3, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(4, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(5, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+
+    Game game(1, std::move(board));
+    std::ostringstream oss1;
+    game.printCurrentGameState(oss1);
+    std::ostringstream oss2;
+    game.getChessBoard().printBoard(oss2);
+    EXPECT_EQ(oss1.str(), oss2.str() + "Team: White\nCheckmate! Team White has lost!\nTurn: 1\n") << "printCurrentGameState did not print the correct game state!";
+}
+/**
+ * Test the Game::printCurrentGameState method prints the current game state correctly if there is a stalemate on a king.
+ */
+TEST(GameTests, PrintCurrentGameStatInStalemate) {
+    ChessBoard board;
+    board.setPiece(4, 4, std::make_unique<King>(Piece::Team::BLACK));
+    board.setWhiteKingsPosition(4, 4);
+    board.setPiece(3, 7, std::make_unique<Rook>(Piece::Team::WHITE));
+    board.setPiece(5, 7, std::make_unique<Rook>(Piece::Team::WHITE));
+    board.setPiece(7, 5, std::make_unique<Rook>(Piece::Team::WHITE));
+    board.setPiece(7, 3, std::make_unique<Rook>(Piece::Team::WHITE));
+
+    Game game(2, std::move(board));
+    std::ostringstream oss1;
+    game.printCurrentGameState(oss1);
+    std::ostringstream oss2;
+    game.getChessBoard().printBoard(oss2);
+    EXPECT_EQ(oss1.str(), oss2.str() + "Team: Black\nStalemate! It's a draw!\nTurn: 2\n") << "printCurrentGameState did not print the correct game state!";
+}
+
+/**
  * Test the Game::nextTurn method increments the turn correctly.
  */
 TEST(GameTests, NextTurn) {

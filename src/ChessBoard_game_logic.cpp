@@ -1,17 +1,11 @@
 #include "ChessBoard.hpp"
+#include "Utility.hpp"
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-#include <array> //for tests only
+#include <vector>
 
-#define DEBUG 1
-
-/**
- * @brief vector from point a to point b
- */
-std::pair<int, int> vector(const std::pair<int, int> a, const std::pair<int, int> b){
-    return {b.first-a.first, b.second-a.second};
-}
+#define DEBUG 0
 
 using size_pair = std::pair<std::size_t, std::size_t>;
 
@@ -33,26 +27,7 @@ void ChessBoard::setBlackKingsPosition(const size x, const size y){
     _blackKingsPosition.second = y;
 }
 
-bool ChessBoard::kingCanMove(const Piece::Team team) const{
-    size_pair position;
-    if(Piece::Team::WHITE == team){
-        position = getWhiteKingsPosition();
-    } else{
-        position = getBlackKingsPosition();
-    }
 
-    for(int i = 1; i > -2; i--){
-        for(int j = 1; j > -2; j--){
-            if(0 == i &&  0 == j){
-                continue;
-            } else if(canMove(position.first, position.second, i, j)){
-                return true;
-            }
-        }
-    }
-    return false;
-        
-}
 
 bool ChessBoard::inCheck(const Piece::Team team, const size_pair position) const{
     size_pair original_kings_position = position;
@@ -327,8 +302,9 @@ bool ChessBoard::inCheckmate(const Piece::Team team) const{
 bool ChessBoard::inStalemate(const Piece::Team team) const{
     #if DEBUG == 1
     bool temp = false;
+    std::cout << "Proceding to stalemate\n";
     #endif
-    if(!inCheck(team) && !kingCanMove(team)){
+    if(!inCheck(team) && !piecesCanMove(team)){
         #if DEBUG == 1
         std::cout << "Stalemate!\n";
         temp = true;
@@ -339,4 +315,24 @@ bool ChessBoard::inStalemate(const Piece::Team team) const{
     return temp;
     #endif
     return false;
+}
+
+void ChessBoard::kingStatus(const Piece::Team team, std::ostream& os) const{
+    if(inCheckmate(team)){
+        os << "Checkmate! ";
+        if(Piece::Team::BLACK == team){
+            os << "Team Black has lost!" << std::endl;
+        } else{
+            os << "Team White has lost!" << std::endl;
+        }
+        return;
+    }
+    else if(inStalemate(team)){
+        os << "Stalemate! It's a draw!" << std::endl;
+        return;
+    }
+    else if(inCheck(team)){
+        os << "King in check!" << std::endl;
+        return;
+    }
 }

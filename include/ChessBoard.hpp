@@ -174,13 +174,57 @@ class ChessBoard{
      * @brief Checks and updates the king's status (check, checkmate, stalemate, nothing) for the given team.
      * @param team The team to check for check status.
      */
-    void kingStatusUpdate(const Piece::Team team);
+    void kingStatus(const Piece::Team team, std::ostream& os = std::cout) const;
     /**
      * @brief Checks if king can move to any adjacent square.
      * @param team The team to check for king's possible moves.
      * @returns true if king can move to any adjacent square, false otherwise.
      */
     bool kingCanMove(const Piece::Team team) const;
+
+    /**
+     * @brief Checks if pawn can move to any adjacent square.
+     * @param o_x original x tile value
+     * @param o_y original y tile value
+     * @param team The team to check for pawn's possible moves.
+     * @returns true if pawn can move to any adjacent square, false otherwise.
+     */
+    bool pawnCanMove(const std::size_t o_x, const std::size_t o_y, const Piece::Team team) const;
+    /**
+     * @brief Checks if rook can move to any adjacent square.
+     * @param o_x original x tile value
+     * @param o_y original y tile value
+     * @returns true if rook can move to any adjacent square, false otherwise.
+     */
+    bool rookCanMove(const std::size_t o_x, const std::size_t o_y) const; 
+    /**
+     * @brief Checks if bishop can move to any adjacent square.
+     * @param o_x original x tile value
+     * @param o_y original y tile value
+     * @returns true if bishop can move to any adjacent square, false otherwise.
+     */
+    bool bishopCanMove(const std::size_t o_x, const std::size_t o_y) const;
+    /**
+     * @brief Checks if knight can move to any adjacent square.
+     * @param o_x original x tile value
+     * @param o_y original y tile value
+     * @returns true if knight can move to any adjacent square, false otherwise.
+     */
+    bool knightCanMove(const std::size_t o_x, const std::size_t o_y) const;
+    /**
+     * @brief Checks if queen can move to any adjacent square.
+     * @param o_x original x tile value
+     * @param o_y original y tile value
+     * @returns true if queen can move to any adjacent square, false otherwise.
+     */
+    bool queenCanMove(const std::size_t o_x, const std::size_t o_y) const;
+
+    /**
+     * @brief Checks if pieces can move anywhere.
+     * @param team The team to check for possible moves.
+     * @returns true if any piece can move, false otherwise.
+     */
+    bool piecesCanMove(const Piece::Team team) const;
     
     /**
      * @brief Checks if the given team is in check.

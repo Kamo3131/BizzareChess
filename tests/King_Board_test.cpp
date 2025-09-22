@@ -290,6 +290,20 @@ TEST(KingBoardTests, InStalemate){
     EXPECT_TRUE(board.inStalemate(Piece::Team::WHITE)) << "King should be in stalemate!";
 }
 
+TEST(KingBoardTests, InStalemateVer2){
+    ChessBoard board;
+    board.setPiece(4, 4, std::make_unique<King>(Piece::Team::WHITE));
+    board.setWhiteKingsPosition(4, 4);
+    board.setPiece(1, 1, std::make_unique<Pawn>(Piece::Team::WHITE));
+    board.setPiece(1, 2, std::make_unique<Pawn>(Piece::Team::BLACK));
+    board.setPiece(3, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(5, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(7, 5, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(7, 3, std::make_unique<Rook>(Piece::Team::BLACK));
+
+    EXPECT_TRUE(board.inStalemate(Piece::Team::WHITE)) << "King and pawn should be in stalemate!";
+}
+
 TEST(KingBoardTests, NotInStalemate){
     ChessBoard board;
     board.setPiece(4, 4, std::make_unique<King>(Piece::Team::WHITE));
@@ -299,4 +313,34 @@ TEST(KingBoardTests, NotInStalemate){
     board.setPiece(7, 5, std::make_unique<Rook>(Piece::Team::BLACK));
 
     EXPECT_FALSE(board.inStalemate(Piece::Team::WHITE)) << "King should not be in stalemate!";
+}
+
+TEST(KingBoardTests, NotInStalemateVer2){
+    ChessBoard board;
+    board.setPiece(4, 4, std::make_unique<King>(Piece::Team::WHITE));
+    board.setWhiteKingsPosition(4, 4);
+    board.setPiece(1, 1, std::make_unique<Pawn>(Piece::Team::WHITE));
+    board.setPiece(3, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(5, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(7, 5, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(7, 3, std::make_unique<Rook>(Piece::Team::BLACK));
+
+    EXPECT_FALSE(board.inStalemate(Piece::Team::WHITE)) << "King and pawn should be in stalemate!";
+}
+
+/**
+ * Test if king surrounded by allied pieces or edges of board and one enemy Queen  gets checkmated.
+ * @note: Doesn't work right now, needs fixing.
+ */
+TEST(KingBoardTests, SurroundedKingCheckmatedByQueen){
+    ChessBoard board;
+    board.setPiece(0, 0, std::make_unique<King>(Piece::Team::WHITE));
+    board.setWhiteKingsPosition(0, 0);
+    board.setPiece(0, 1, std::make_unique<Pawn>(Piece::Team::WHITE));
+    board.setPiece(1, 0, std::make_unique<Queen>(Piece::Team::BLACK));
+    board.setPiece(1, 1, std::make_unique<Pawn>(Piece::Team::WHITE));
+    board.setPiece(4, 2, std::make_unique<King>(Piece::Team::BLACK));
+    board.setBlackKingsPosition(4, 2);
+
+    EXPECT_TRUE(board.inCheckmate(Piece::Team::WHITE)) << "White King should be in checkmate by Black Queen!";
 }
