@@ -169,14 +169,26 @@ bool ChessBoard::kingCanMove(const Piece::Team team) const{
     for(int i = 1; i > -2; i--){
         for(int j = 1; j > -2; j--){
             if(((pos_first+i < 0) || (pos_first+i) >= static_cast<int>(_horizontal)) 
-                && ((pos_second+j) < 0 || (pos_second+j) >= static_cast<int>(_vertical))){
-                continue;
+                || ((pos_second+j) < 0 || (pos_second+j) >= static_cast<int>(_vertical))){
+                    #if DEBUG == 1
+                    std::cout << "Position outside of the board!" << std::endl;
+                    #endif
+                    continue;
             }
             if(0 == i &&  0 == j){
+                #if DEBUG == 1
+                std::cout << "Position of the king!" << std::endl;
+                #endif
                 continue;
             } else if(canMove(position.first, position.second, i, j)){
+                #if DEBUG == 1
+                std::cout << "King can move!" << std::endl;
+                #endif
                 return true;
             }
+            #if DEBUG == 1
+            std::cout << "None can move!" << std::endl;
+            #endif
         }
     }
     return false;

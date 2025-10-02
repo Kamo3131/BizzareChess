@@ -299,6 +299,14 @@ class ChessBoard{
     void setPiece(const std::size_t o_x, const std::size_t o_y, std::unique_ptr<Piece> piece);
 
     /**
+     * @brief Gets piece at given tile o(x, y)
+     * @param o_x x tile value
+     * @param o_y y tile value
+     */
+
+    std::unique_ptr<Piece>& getPiece(const std::size_t o_x, const std::size_t o_y) const;
+
+    /**
      * @brief Gets if there is a piece at given o(x,y) tile
      * @param o_x x tile value
      * @param o_y y tile value

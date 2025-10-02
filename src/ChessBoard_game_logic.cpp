@@ -31,17 +31,26 @@ void ChessBoard::setBlackKingsPosition(const size x, const size y){
 
 bool ChessBoard::inCheck(const Piece::Team team, const size_pair position) const{
     size_pair original_kings_position = position;
-    if(!pieces[position.first][position.second]){
+    std::unique_ptr<Piece> piece;
+    if(!pieces[position.first][position.second]){ //If piece not on square(position.first, position.second)
         if(team == Piece::Team::WHITE){
             original_kings_position = getWhiteKingsPosition();
         } else{
             original_kings_position = getBlackKingsPosition();
         }
-        pieces[position.first][position.second] 
-        = std::move(pieces[original_kings_position.first][original_kings_position.second]);
+    } else if(pieces[position.first][position.second]->getType() != Piece::Type::KING && pieces[position.first][position.second]->getTeam() != team){
+        piece = std::move(pieces[position.first][position.second]);
+        pieces[position.first][position.second] = nullptr;
     }
+    pieces[position.first][position.second] = std::move(pieces[original_kings_position.first][original_kings_position.second]);
+    // pieces[original_kings_position.first][original_kings_position.second] = nullptr;
     #if DEBUG == 1
     printBoard();
+    if(piece){
+        std::cout << "True" << std::endl;
+    } else{
+        std::cout << "False" << std::endl;
+    }
     #endif
 
     int x;
@@ -257,6 +266,10 @@ bool ChessBoard::inCheck(const Piece::Team team, const size_pair position) const
         pieces[original_kings_position.first][original_kings_position.second] 
         = std::move(pieces[position.first][position.second]);
     }
+    if(piece){
+        pieces[position.first][position.second] = std::move(piece);
+        piece = nullptr;
+    }
     #if DEBUG == 1
     printBoard();
 
@@ -266,6 +279,7 @@ bool ChessBoard::inCheck(const Piece::Team team, const size_pair position) const
         }
         std::cout << std::endl;
     }
+    std::cout << "Hello\n";
     #endif
     return temp;
 }

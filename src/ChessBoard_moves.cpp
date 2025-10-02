@@ -77,25 +77,25 @@ bool ChessBoard::canMove(const std::size_t o_x, const std::size_t o_y, const int
         return false;
     }
     if(pieces[o_x][o_y] == nullptr){
-        std::cerr << "Error: No piece at (" << o_x << ", " << o_y << ") to check move." << std::endl;
+        // std::cerr << "Error: No piece at (" << o_x << ", " << o_y << ") to check move." << std::endl;
         return false;
     }
     if(pieceOnPath(o_x, o_y, x, y)){
-        std::cout << "Error: Cannot move, there is a piece on the path." << std::endl;
+        // std::cerr << "Error: Cannot move, there is a piece on the path." << std::endl;
         return false;
     }
     if(pieces[o_x+x][o_y+y] && pieces[o_x+x][o_y+y]->getTeam() == pieces[o_x][o_y]->getTeam()){
-        std::cout << "Error: Cannot move, there is an allied piece on the square.\n";
+        // std::cerr << "Error: Cannot move, there is an allied piece on the square: (" << static_cast<int>(o_x)+x << ", " << static_cast<int>(o_y)+y << ")\n";
         return false;
     }
     if(pieces[o_x][o_y]->getType() == Piece::Type::KING && inCheck(pieces[o_x][o_y]->getTeam(), std::make_pair(o_x+x, o_y+y))){
-        std::cout << "Error: Cannot move, check on that square.\n";
+        // std::cerr << "Error: Cannot move, check on square: (" << static_cast<int>(o_x)+x << ", " << static_cast<int>(o_y)+y << ")\n";
         return false;
     }
     if(enPassantAvailable(o_x, o_y, x, y)){
         return true;
     }
-    if(pieces[o_x+x][o_y+y]){
+    if(pieces[o_x+x][o_y+y] ){
         return pieces[o_x][o_y]->attack(x, y);
     }
     return pieces[o_x][o_y]->move(x, y);

@@ -164,3 +164,13 @@ void ChessBoard::setPiece(const std::size_t o_x, const std::size_t o_y, std::uni
     pieces[o_x][o_y] = std::move(piece);
 }
 
+std::unique_ptr<Piece>& ChessBoard::getPiece(const std::size_t o_x, const std::size_t o_y) const{
+    if(o_x >= _horizontal || o_y >= _vertical){
+        std::cerr << "Error: Attempt to get piece out of bounds at (" << o_x << ", " << o_y << ")." << std::endl;
+        // Return a reference to a static null unique_ptr to avoid dangling reference
+        static std::unique_ptr<Piece> nullPtr = nullptr;
+        return nullPtr;
+    }
+    return pieces[o_x][o_y];
+}
+

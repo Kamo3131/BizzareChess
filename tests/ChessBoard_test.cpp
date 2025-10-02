@@ -447,3 +447,21 @@ TEST(ChessBoardTests, EnPassantTurnUpdate) {
     EXPECT_EQ(board.getEnPassantStatus(0, 1).first, 0) << "En passant turns should decrease to 0!";
     EXPECT_FALSE(board.getEnPassantStatus(0, 1).second) << "En passant should no longer be possible!";
 }
+
+/**
+ * Test the ChessBoard::getPiece method returns the correct piece at a given tile.
+ */
+TEST(ChessBoardTests, GetPieceAtTile){
+    ChessBoard board;
+    std::unique_ptr<Piece> pawn1B = std::make_unique<Pawn>(Piece::Team::BLACK);
+    Piece::Team team = pawn1B->getTeam();
+    int health = pawn1B->getHealth();
+    int damage = pawn1B->getDamage();
+    board.setPiece(0, 0, std::move(pawn1B));
+    EXPECT_TRUE(board.getPiece(0, 0) != nullptr) << "There should be a piece at (0, 0)!";
+    EXPECT_TRUE(board.getPiece(1, 1) == nullptr) << "There should be no piece at (1, 1)!";
+
+    EXPECT_TRUE(board.getPiece(0, 0)->getTeam() == team) << "Team should be the same as in pawn declared first!";
+    EXPECT_TRUE(board.getPiece(0, 0)->getHealth() == health) << "Healt should be the same as in pawn declared first!";
+    EXPECT_TRUE(board.getPiece(0, 0)->getDamage() == damage) << "Damage should be the same as in pawn declared first!";
+}

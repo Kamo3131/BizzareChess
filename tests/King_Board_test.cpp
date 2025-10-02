@@ -332,15 +332,72 @@ TEST(KingBoardTests, NotInStalemateVer2){
  * Test if king surrounded by allied pieces or edges of board and one enemy Queen  gets checkmated.
  * @note: Doesn't work right now, needs fixing.
  */
-TEST(KingBoardTests, SurroundedKingCheckmatedByQueen){
+TEST(KingBoardTests, SurroundedWhiteKingCheckmatedByQueenOnTheEdge){
     ChessBoard board;
     board.setPiece(0, 0, std::make_unique<King>(Piece::Team::WHITE));
     board.setWhiteKingsPosition(0, 0);
     board.setPiece(0, 1, std::make_unique<Pawn>(Piece::Team::WHITE));
     board.setPiece(1, 0, std::make_unique<Queen>(Piece::Team::BLACK));
+    board.setPiece(2, 0, std::make_unique<Rook>(Piece::Team::BLACK));
     board.setPiece(1, 1, std::make_unique<Pawn>(Piece::Team::WHITE));
     board.setPiece(4, 2, std::make_unique<King>(Piece::Team::BLACK));
-    board.setBlackKingsPosition(4, 2);
-
+    board.setBlackKingsPosition(4, 2);  
+    EXPECT_TRUE(board.inCheck(Piece::Team::WHITE)) << "White King should be in checkmate by Black Queen!";
     EXPECT_TRUE(board.inCheckmate(Piece::Team::WHITE)) << "White King should be in checkmate by Black Queen!";
+}
+
+TEST(KingBoardTests, SurroundedWhiteKingCheckmatedByQueen){
+    ChessBoard board;
+    board.setPiece(3, 4, std::make_unique<King>(Piece::Team::WHITE));
+    board.setWhiteKingsPosition(3, 4);
+    board.setPiece(2, 3, std::make_unique<Pawn>(Piece::Team::WHITE));
+    board.setPiece(2, 4, std::make_unique<Pawn>(Piece::Team::WHITE));
+    board.setPiece(2, 5, std::make_unique<Pawn>(Piece::Team::WHITE));
+    board.setPiece(4, 3, std::make_unique<Pawn>(Piece::Team::WHITE));
+    board.setPiece(4, 4, std::make_unique<Pawn>(Piece::Team::WHITE));
+    board.setPiece(4, 5, std::make_unique<Pawn>(Piece::Team::WHITE));
+    board.setPiece(3, 5, std::make_unique<Pawn>(Piece::Team::WHITE));
+    // board.setPiece(2, 1, std::make_unique<Queen>(Piece::Team::BLACK));
+    board.setPiece(3, 3, std::make_unique<Queen>(Piece::Team::BLACK));
+    board.setPiece(3, 2, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(6, 6, std::make_unique<King>(Piece::Team::BLACK));
+    board.setBlackKingsPosition(6, 6);  
+    EXPECT_TRUE(board.inCheck(Piece::Team::WHITE)) << "White King should be in checkmate by Black Queen!";
+    EXPECT_TRUE(board.inCheckmate(Piece::Team::WHITE)) << "White King should be in checkmate by Black Queen!";
+}
+
+TEST(KingBoardTests, SurroundedBlackKingCheckmatedByQueenOnTheEdge){
+    ChessBoard board;
+    for(int i = 0; i < 8; i++){
+        board.setPiece(i, 1, std::make_unique<Pawn>(Piece::Team::WHITE));
+        board.setPiece(i, 6, std::make_unique<Pawn>(Piece::Team::BLACK));
+    }
+    // board.setPiece(0, 2, std::make_unique<Pawn>(Piece::Team::WHITE));
+    // board.setPiece(1, 5, std::make_unique<Pawn>(Piece::Team::BLACK));
+    board.setPiece(0, 0, std::make_unique<Rook>(Piece::Team::WHITE));
+    board.setPiece(7, 0, std::make_unique<Rook>(Piece::Team::WHITE));
+    board.setPiece(0, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+    board.setPiece(7, 7, std::make_unique<Rook>(Piece::Team::BLACK));
+
+    board.setPiece(1, 0, std::make_unique<Knight>(Piece::Team::WHITE));
+    board.setPiece(2, 3, std::make_unique<Knight>(Piece::Team::WHITE));
+    board.setPiece(1, 7, std::make_unique<Knight>(Piece::Team::BLACK));
+    board.setPiece(6, 7, std::make_unique<Knight>(Piece::Team::BLACK));
+
+    board.setPiece(2, 0, std::make_unique<Bishop>(Piece::Team::WHITE));
+    board.setPiece(5, 0, std::make_unique<Bishop>(Piece::Team::WHITE));
+    board.setPiece(2, 7, std::make_unique<Bishop>(Piece::Team::BLACK));
+    board.setPiece(5, 7, std::make_unique<Bishop>(Piece::Team::BLACK));
+
+    board.setPiece(5, 2, std::make_unique<Queen>(Piece::Team::WHITE));
+    board.setPiece(4, 0, std::make_unique<King>(Piece::Team::WHITE));
+    board.setWhiteKingsPosition(4, 0);
+    board.setPiece(3, 7, std::make_unique<Queen>(Piece::Team::BLACK));
+    board.setPiece(4, 7, std::make_unique<King>(Piece::Team::BLACK));
+    board.setBlackKingsPosition(4, 7);
+
+    board.move(5, 2, 0, 4);
+
+    EXPECT_TRUE(board.inCheck(Piece::Team::BLACK)) << "Black King should be in checkmate by Black Queen!";
+    EXPECT_TRUE(board.inCheckmate(Piece::Team::BLACK)) << "Black King should be in checkmate by Black Queen!";
 }
