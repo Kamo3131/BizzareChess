@@ -1,5 +1,6 @@
 
 include(FetchContent)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_Declare(
   googletest
   GIT_REPOSITORY https://github.com/google/googletest.git
@@ -12,7 +13,7 @@ file(GLOB TEST_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 add_executable(chess_tests ${TEST_SOURCES} )
 target_include_directories(chess_tests PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
-target_link_libraries(chess_tests gtest_main chess_logic)
+target_link_libraries(chess_tests PRIVATE gtest_main chess_logic sfml-system)
 
 include(GoogleTest)
 gtest_discover_tests(chess_tests)
