@@ -33,7 +33,7 @@ bool Game::surrender(){
         });
         if(command == "Y" || command == "YES"){
             std::cout << "You have surrendered...\n";
-            exit(EXIT_SUCCESS);
+            // exit(EXIT_SUCCESS);
             return false;
         } else if(command == "N" || command == "NO" || command == "NOPE" || command == "NIE" || command == "C" || command == "CANCEL" || command == "CANCEL SURRENDER"){
             std::cout << "You have not surrendered.\n";
@@ -62,7 +62,6 @@ bool Game::quitGame(){
         });
         if(command == "Y" || command == "YES"){
             std::cout << "You have quit the game...\n";
-            exit(EXIT_SUCCESS);
             return false;
         } else if(command == "N" || command == "NO" || command == "NOPE" || command == "NIE" || command == "C" || command == "CANCEL" || command == "CANCEL QUIT"){
             std::cout << "You have not quit the game.\n";

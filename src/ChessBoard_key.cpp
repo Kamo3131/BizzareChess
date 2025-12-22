@@ -160,7 +160,7 @@ void ChessBoard::setPiece(const std::size_t o_x, const std::size_t o_y, std::uni
         std::cerr << "Error: Attempt to set a null piece at (" << o_x << ", " << o_y << ")." << std::endl;
         return;
     }
-    std::cout << "Setting piece " << piece->getName() << " at (" << o_x << ", " << o_y << ")." << std::endl;
+    // std::cout << "Setting piece " << piece->getName() << " at (" << o_x << ", " << o_y << ")." << std::endl;
     pieces[o_x][o_y] = std::move(piece);
 }
 
