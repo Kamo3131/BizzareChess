@@ -80,25 +80,40 @@ bool ChessBoard::canMove(const std::size_t o_x, const std::size_t o_y, const int
         // std::cerr << "Error: No piece at (" << o_x << ", " << o_y << ") to check move." << std::endl;
         return false;
     }
+    int target_x = static_cast<int>(o_x) + x;
+    int target_y = static_cast<int>(o_y) + y;
+
+    if(target_x < 0 || target_x >= static_cast<int>(_horizontal) || target_y < 0 || target_y >= static_cast<int>(_vertical)){
+        return false;
+    }
+    if(pieces[target_x][target_y] && pieces[target_x][target_y]->getTeam() == pieces[o_x][o_y]->getTeam()){
+        // std::cerr << "Error: Cannot move, there is an allied piece on the square: (" << static_cast<int>(o_x)+x << ", " << static_cast<int>(o_y)+y << ")\n";
+        return false;
+    }
+
+    bool isAttack = (pieces[target_x][target_y] != nullptr) || enPassantAvailable(o_x, o_y, x, y);
+    bool validPath = false;
+    if(isAttack){
+        validPath = pieces[o_x][o_y]->attack(x, y);
+        if(!validPath && enPassantAvailable(o_x, o_y, x, y)){
+            validPath = true;
+        }
+    } else {
+        validPath = pieces[o_x][o_y]->move(x, y);
+    }
+
+    if(!validPath){
+        return false;
+    }
     if(pieceOnPath(o_x, o_y, x, y)){
         // std::cerr << "Error: Cannot move, there is a piece on the path." << std::endl;
         return false;
     }
-    if(pieces[o_x+x][o_y+y] && pieces[o_x+x][o_y+y]->getTeam() == pieces[o_x][o_y]->getTeam()){
-        // std::cerr << "Error: Cannot move, there is an allied piece on the square: (" << static_cast<int>(o_x)+x << ", " << static_cast<int>(o_y)+y << ")\n";
-        return false;
-    }
-    if(pieces[o_x][o_y]->getType() == Piece::Type::KING && inCheck(pieces[o_x][o_y]->getTeam(), std::make_pair(o_x+x, o_y+y))){
+    if(pieces[o_x][o_y]->getType() == Piece::Type::KING && inCheck(pieces[o_x][o_y]->getTeam(), std::make_pair(target_x, target_y))){
         // std::cerr << "Error: Cannot move, check on square: (" << static_cast<int>(o_x)+x << ", " << static_cast<int>(o_y)+y << ")\n";
         return false;
     }
-    if(enPassantAvailable(o_x, o_y, x, y)){
-        return true;
-    }
-    if(pieces[o_x+x][o_y+y] ){
-        return pieces[o_x][o_y]->attack(x, y);
-    }
-    return pieces[o_x][o_y]->move(x, y);
+    return true;
 }
 
 bool ChessBoard::canAttackKing(const std::size_t o_x, const std::size_t o_y, const int x, const int y) const {
@@ -255,7 +270,8 @@ bool ChessBoard::pieceOnPath(const std::size_t o_x, const std::size_t o_y, const
     }
     int start_x = static_cast<int>(o_x) + temp_x, start_y = static_cast<int>(o_y) + temp_y;
     int end_x = static_cast<int>(o_x) + x, end_y = static_cast<int>(o_y) + y;
-
+    if(start_x == end_x) temp_x = 0;
+    if(start_y == end_y) temp_y = 0;
     if(!temp_x){
         // std::cout << "x = "<< temp_x << std::endl;
         for(int j = start_y; temp_y == 1 ? j < end_y : j > end_y; j+=temp_y){
@@ -264,6 +280,7 @@ bool ChessBoard::pieceOnPath(const std::size_t o_x, const std::size_t o_y, const
                 return true;
             }
         }
+        return false;
     }
     if(!temp_y){
         // std::cout << "y = " << temp_y << std::endl;
@@ -273,9 +290,13 @@ bool ChessBoard::pieceOnPath(const std::size_t o_x, const std::size_t o_y, const
                 return true;
             }
         }
+        return false;
     }
-    for(int i = start_x, j = start_y; temp_x == 1 ? i < end_x : i > end_x && temp_y == 1 ? j < end_y : j > end_y; i+=temp_x, j+=temp_y){
+    for(int i = start_x, j = start_y; (temp_x == 1 ? i < end_x : i > end_x) && (temp_y == 1 ? j < end_y : j > end_y); i+=temp_x, j+=temp_y){
             // std::cout << "x = " << i << "; y = " << j << std::endl;
+            if(i < 0 || i >= static_cast<int>(_horizontal) || j < 0 || j >= static_cast<int>(_vertical)){
+                return true;
+            }
             if(pieces[i][j]){
                 return true;
             }

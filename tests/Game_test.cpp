@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "Game.hpp"
+#include "GameTerminal.hpp"
 #include <string>
 #include <sstream>
 #include <functional>
@@ -8,7 +8,7 @@
  * Test the Game constructor initializes the turn to 0 and creates a ChessBoard with default size.
  */
 TEST(GameTests, DefaultConstructor) {
-    Game game;
+    GameTerminal game;
     EXPECT_EQ(game.getTurn(), 1) << "Default constructor failed to initialize turn to 0!";
     EXPECT_EQ(game.getChessBoard().getHorizontal(), 8) << "Default constructor failed to create ChessBoard with horizontal size 8!";
     EXPECT_EQ(game.getChessBoard().getVertical(), 8) << "Default constructor failed to create ChessBoard with vertical size 8!";
@@ -17,7 +17,7 @@ TEST(GameTests, DefaultConstructor) {
  * Test the Game constructor initializes the turn to 0 and creates a ChessBoard with specified size.
  */
 TEST(GameTests, ParametrizedConstructor) {
-    Game game(10, 12);
+    GameTerminal game(10, 12);
     EXPECT_EQ(game.getTurn(), 1) << "Parameterized constructor failed to initialize turn to 0!";
     EXPECT_EQ(game.getChessBoard().getHorizontal(), 10) << "Parameterized constructor failed to create ChessBoard with horizontal size 10!";
     EXPECT_EQ(game.getChessBoard().getVertical(), 12) << "Parameterized constructor failed to create ChessBoard with vertical size 12!";
@@ -27,7 +27,7 @@ TEST(GameTests, ParametrizedConstructor) {
  */
 TEST(GameTests, ConstructorWithTurnAndChessBoard) {
     ChessBoard chessBoard(10, 12);
-    Game game(5, std::move(chessBoard));
+    GameTerminal game(5, std::move(chessBoard));
     EXPECT_EQ(game.getTurn(), 5) << "Constructor with turn and ChessBoard failed to initialize turn correctly!";
     EXPECT_EQ(game.getChessBoard().getHorizontal(), 10) << "Constructor with turn and ChessBoard failed to create ChessBoard with horizontal size 10!";
     EXPECT_EQ(game.getChessBoard().getVertical(), 12) << "Constructor with turn and ChessBoard failed to create ChessBoard with vertical size 12!";
@@ -36,7 +36,7 @@ TEST(GameTests, ConstructorWithTurnAndChessBoard) {
  * Test the Game::printCurrentGameState method prints the current game state correctly.
  */
 TEST(GameTests, PrintCurrentGameState) {
-    Game game;
+    GameTerminal game;
     std::ostringstream oss1;
     game.printCurrentGameState(oss1);
     std::ostringstream oss2;
@@ -53,12 +53,12 @@ TEST(GameTests, PrintCurrentGameStatKingInCheck) {
     board.setBlackKingsPosition(3, 2);
     board.setPiece(3, 0, std::make_unique<Rook>(Piece::Team::WHITE));
 
-    Game game(2, std::move(board));
+    GameTerminal game(2, std::move(board));
     std::ostringstream oss1;
     game.printCurrentGameState(oss1);
     std::ostringstream oss2;
     game.getChessBoard().printBoard(oss2);
-    EXPECT_EQ(oss1.str(), oss2.str() + "Team: Black\nKing in check!\nTurn: 2\n") << "printCurrentGameState did not print the correct game state!";
+    EXPECT_EQ(oss1.str(), oss2.str() + "Team: Black\nBlack king in check!\nTurn: 2\n") << "printCurrentGameState did not print the correct game state!";
 }
 
 /**
@@ -72,7 +72,7 @@ TEST(GameTests, PrintCurrentGameStatBlackKingInCheckmate) {
     board.setPiece(4, 7, std::make_unique<Rook>(Piece::Team::WHITE));
     board.setPiece(5, 7, std::make_unique<Rook>(Piece::Team::WHITE));
 
-    Game game(2, std::move(board));
+    GameTerminal game(2, std::move(board));
     std::ostringstream oss1;
     game.printCurrentGameState(oss1);
     std::ostringstream oss2;
@@ -91,7 +91,7 @@ TEST(GameTests, PrintCurrentGameStatWhiteKingInCheckmate) {
     board.setPiece(4, 7, std::make_unique<Rook>(Piece::Team::BLACK));
     board.setPiece(5, 7, std::make_unique<Rook>(Piece::Team::BLACK));
 
-    Game game(1, std::move(board));
+    GameTerminal game(1, std::move(board));
     std::ostringstream oss1;
     game.printCurrentGameState(oss1);
     std::ostringstream oss2;
@@ -110,7 +110,7 @@ TEST(GameTests, PrintCurrentGameStatInStalemate) {
     board.setPiece(7, 5, std::make_unique<Rook>(Piece::Team::WHITE));
     board.setPiece(7, 3, std::make_unique<Rook>(Piece::Team::WHITE));
 
-    Game game(2, std::move(board));
+    GameTerminal game(2, std::move(board));
     std::ostringstream oss1;
     game.printCurrentGameState(oss1);
     std::ostringstream oss2;
@@ -122,7 +122,7 @@ TEST(GameTests, PrintCurrentGameStatInStalemate) {
  * Test the Game::nextTurn method increments the turn correctly.
  */
 TEST(GameTests, NextTurn) {
-    Game game;
+    GameTerminal game;
     int initialTurn = game.getTurn();
     game.nextTurn();
     EXPECT_EQ(game.getTurn(), initialTurn + 1) << "nextTurn method failed to increment turn!";
@@ -131,7 +131,7 @@ TEST(GameTests, NextTurn) {
  * Test the Game::previousTurn method decrements the turn correctly.
  */
 TEST(GameTests, PreviousTurn) {
-    Game game;
+    GameTerminal game;
     game.nextTurn(); // Increment to ensure we have a turn to go back to
     int initialTurn = game.getTurn();
     game.previousTurn();
@@ -142,7 +142,7 @@ TEST(GameTests, PreviousTurn) {
  * Test the Game::surrender method returns false when the game is surrendered.
  */
 TEST(GameTests, Surrender) {
-    Game game;
+    GameTerminal game;
     std::string test_input = "Y\n"; 
     std::stringstream ss(test_input);
     std::streambuf* old_cin_buf = std::cin.rdbuf();
@@ -154,7 +154,7 @@ TEST(GameTests, Surrender) {
  * Test the Game::quitGame method returns false when the game is quit.
  */
 TEST(GameTests, QuitGame) {
-    Game game;
+    GameTerminal game;
     std::string test_input = "Y\n"; 
     std::stringstream ss(test_input);
     std::streambuf* old_cin_buf = std::cin.rdbuf();
@@ -169,7 +169,7 @@ TEST(GameTests, QuitGame) {
 TEST(GameTests, MovePiece) {
     ChessBoard board;
     board.setPiece(0, 1, std::make_unique<Pawn>(Piece::Team::WHITE));
-    Game game(1, std::move(board));
+    GameTerminal game(1, std::move(board));
     std::string test_input = "2A\n3A\n"; // Simulate moving a piece from 1A to 2B
     std::stringstream ss(test_input);
     std::streambuf* old_cin_buf = std::cin.rdbuf();
@@ -189,7 +189,7 @@ TEST(GameTests, MovePiece) {
 TEST(GameTests, MovePieceInvalidMove) {
     ChessBoard board;
     board.setPiece(0, 1, std::make_unique<Pawn>(Piece::Team::WHITE));
-    Game game(1, std::move(board));
+    GameTerminal game(1, std::move(board));
     std::string test_input = "2A\n2A\n3A\n"; // Simulate invalid move from 2A to 2A, then valid move to 3A
     std::stringstream ss(test_input);
     std::streambuf* old_cin_buf = std::cin.rdbuf();
@@ -215,7 +215,7 @@ TEST(GameTests, GameLoopEnPassantTurnUpdate) {
     pawn1B->setEnPassant(1, true); // Set en passant turns to 2 for black pawn
     board.setPiece(1, 6, std::move(pawn1B));
     
-    Game game(1, std::move(board));
+    GameTerminal game(1, std::move(board));
 
     game.enPassantTurnCycle();
     game.nextTurn();

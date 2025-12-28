@@ -13,7 +13,7 @@ set(SOURCE_DIR "${PROJECT_SOURCE_DIR}/src")
 
 include(FetchContent)
 
-# SFML 3.0.2 (STATIC)
+# SFML 2.6.2 (STATIC)
 #============================================================================
 set(SFML_STATIC_LIBRARIES ON)
 set(BUILD_SHARED_LIBS OFF)
@@ -55,7 +55,6 @@ FetchContent_Declare(
 )
 FetchContent_Populate(imgui_sfml)
 
-# Build ImGui-SFML manually
 add_library(imgui-sfml STATIC
     ${imgui_sfml_SOURCE_DIR}/imgui-SFML.cpp
 )
@@ -80,11 +79,18 @@ file(GLOB SOURCES "${SOURCE_DIR}/*.cpp")
 
 add_library(chess_logic STATIC ${SOURCES})
 target_include_directories(chess_logic PUBLIC ${INCLUDE_DIR})
-
+target_link_libraries(chess_logic PUBLIC
+    sfml-graphics
+    sfml-window
+    sfml-system
+    imgui
+    imgui-sfml
+)
 add_executable(${PROJECT_NAME} Main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE chess_logic imgui-sfml sfml-graphics sfml-window sfml-system)
 if(WIN32)
-    target_link_libraries(${PROJECT_NAME} PRIVATE opengl32 winmm gdi32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE opengl32 glu32 winmm gdi32)
+    target_link_libraries(chess_logic PUBLIC opengl32 glu32 winmm gdi32)
 endif()
 
 if(MSVC)

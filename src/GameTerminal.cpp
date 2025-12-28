@@ -1,28 +1,26 @@
-#include "Game.hpp"
-#include <iostream>
+#include "GameTerminal.hpp"
 #include <string>
 #include <sstream>
-#include <algorithm>
 #include <regex>
 
-Game::Game() : _turn{1}, _chessBoard{8, 8}{
+GameTerminal::GameTerminal() : _turn{1}, _chessBoard{8, 8}{
     _chessBoard.initPieces();
 }
 
-Game::Game(const size horizontal, const size vertical) : _turn{1}, _chessBoard{horizontal, vertical}{
+GameTerminal::GameTerminal(const size horizontal, const size vertical) : _turn{1}, _chessBoard{horizontal, vertical}{
     _chessBoard.initPieces();
 }
-Game::Game(const int turn, ChessBoard&& chessBoard) : _turn{turn}, _chessBoard{std::move(chessBoard)}{
+GameTerminal::GameTerminal(const int turn, ChessBoard&& chessBoard) : _turn{turn}, _chessBoard{std::move(chessBoard)}{
     
 }
-void Game::printCurrentGameState(std::ostream& os) const{
+void GameTerminal::printCurrentGameState(std::ostream& os) const{
     _chessBoard.printBoard(os);
     Piece::Team team = _turn % 2 == 0 ? Piece::Team::BLACK : Piece::Team::WHITE;
     os << "Team: " << (_turn % 2 == 0 ? "Black" : "White") << std::endl;
     _chessBoard.kingStatus(team, os);
     os << "Turn: " << _turn << std::endl;
 }
-bool Game::surrender(){
+bool GameTerminal::surrender(){
     std::string command;
     
     while(true){
@@ -44,7 +42,7 @@ bool Game::surrender(){
 }   
 }
 
-void Game::enPassantTurnCycle(){
+void GameTerminal::enPassantTurnCycle(){
     if(_turn % 2 == 0){
         _chessBoard.enPassantTurnUpdate(Piece::Team::BLACK);
     } else{
@@ -52,7 +50,7 @@ void Game::enPassantTurnCycle(){
     }
 }
 
-bool Game::quitGame(){
+bool GameTerminal::quitGame(){
     std::string command;
     while(true){
         std::cout << "Enter command: ";
@@ -72,7 +70,7 @@ bool Game::quitGame(){
 }
 }
 
-void Game::movePiece(){
+void GameTerminal::movePiece(){
     std::string square;
     size o_y, o_x;
     while(true){
@@ -109,7 +107,7 @@ void Game::movePiece(){
     return;
 }
 
-void Game::movePiece(std::string square){
+void GameTerminal::movePiece(std::string square){
     std::for_each(square.begin(), square.end(), [](char &c) {
         c = toupper(c); // Convert to uppercase
     });
@@ -139,7 +137,7 @@ void Game::movePiece(std::string square){
     return;
 }
 
-void Game::selectTargetSquare(std::size_t o_x, std::size_t o_y){
+void GameTerminal::selectTargetSquare(std::size_t o_x, std::size_t o_y){
     std::cout << "Now, choose where should this piece move to!\n";
     int x, y;
     std::string target_square;
@@ -178,7 +176,7 @@ void Game::selectTargetSquare(std::size_t o_x, std::size_t o_y){
     _chessBoard.move(o_x, o_y, x, y);
     nextTurn();
 }
-void Game::gameLoop(){
+void GameTerminal::gameLoop(){
     bool temp = true;
     while(temp){
         enPassantTurnCycle();
@@ -216,15 +214,15 @@ void Game::gameLoop(){
         }
     }
 }
-void Game::nextTurn(){
+void GameTerminal::nextTurn(){
     _turn++;
 }
-void Game::previousTurn(){
+void GameTerminal::previousTurn(){
     _turn--;
 }
-int Game::getTurn() const {
+int GameTerminal::getTurn() const {
     return _turn;
 }
-const ChessBoard& Game::getChessBoard() const {
+const ChessBoard& GameTerminal::getChessBoard() const {
     return _chessBoard;
 }
