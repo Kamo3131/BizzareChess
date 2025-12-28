@@ -346,7 +346,11 @@ void ChessBoard::kingStatus(const Piece::Team team, std::ostream& os) const{
         return;
     }
     else if(inCheck(team)){
-        os << "King in check!" << std::endl;
+        if(Piece::Team::WHITE == team){
+            os << "White king in check!" << std::endl;
+        } else {
+            os << "Black king in check!" << std::endl;
+        }
         return;
     }
 }

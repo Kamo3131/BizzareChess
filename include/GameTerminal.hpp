@@ -1,29 +1,24 @@
 #pragma once
-#include <iostream>
-#include <ChessBoard.hpp>
-#include <vector>
-#include "Piece.hpp"
-#include "King.hpp"
-#include <memory>
-class Game{
+#include "GameInterface.hpp"
+class GameTerminal : public GameInterface{
     public:
     using size = std::size_t;
     /**
      * @brief Default constructor. Initializes _turn with 0 and _chessBoard with 8x8.
      */
-    Game();
+    GameTerminal();
     /**
      * @brief Constructor for game with different chessboard sizes.
      * @param horizontal sets horizontal tile number, should not exceed 26
      * @param vertical sets vertical lenght, should not exceed 26
      */
-    Game(const size horizontal, const size vertical);
+    GameTerminal(const size horizontal, const size vertical);
     /**
      * @brief Constructor for game with given turn and chessboard.
      * @param turn sets current turn
      * @param chessBoard sets chessboard
      */
-    Game(const int turn, ChessBoard&& chessBoard);
+    GameTerminal(const int turn, ChessBoard&& chessBoard);
     /**
      * @brief Prints current game state, including chessboard state and turn number.
      */
