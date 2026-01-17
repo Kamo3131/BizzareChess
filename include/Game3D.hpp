@@ -78,6 +78,7 @@ class Game3D : public GameInterface {
      * @param mouseY coordinate Y of mouse cursor.
      */
     void handleMouseClick(const Chessboard3D, int mouseX, int mouseY);
+    void renderShaderBackground(sf::RenderWindow& window, float time) const;
     private:
     void initOpengl() const;
     /**

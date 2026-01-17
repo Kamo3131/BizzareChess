@@ -95,6 +95,7 @@ void Game3D::gameLoop(){
 
     if (!ImGui::SFML::Init(window)) return;
     sf::Clock deltaClock;
+    float totalTime = 0.0f;
     Chessboard3D chess3D(sf::Vector2f(1.0f, 1.0f));
     int horizontal = _chessBoard.getHorizontal();
     int vertical = _chessBoard.getVertical();
@@ -124,9 +125,12 @@ void Game3D::gameLoop(){
                 _possibleMoves.clear();
             }
         }
-        ImGui::SFML::Update(window, deltaClock.restart());
+        sf::Time deltaTime = deltaClock.restart();
+        ImGui::SFML::Update(window, deltaTime);
+        totalTime += deltaTime.asSeconds();
         
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        renderShaderBackground(window, totalTime);
         setupCamera();
         for(int i = horizontal - 1; i > -1; i--){
             for(int j = vertical - 1; j > -1; j--){
@@ -204,11 +208,11 @@ void Game3D::gameLoop(){
                     return;
                 }
             }
-            if(ImGui::Button("Restart")){
-                if(surrender()){
-                    return;
-                }
-            }
+            // if(ImGui::Button("Restart")){
+            //     if(surrender()){
+            //         return;
+            //     }
+            // }
         ImGui::End();
         ImGui::Begin("Game Status");
         ImGui::SeparatorText("Selection");
@@ -225,8 +229,6 @@ void Game3D::gameLoop(){
         } else {
             ImGui::TextDisabled("No square selected");
         }
-
-        // --- 2. King Status Section ---
         ImGui::Spacing();
         ImGui::SeparatorText("King Status");
 
@@ -308,7 +310,7 @@ void Game3D::handleMouseClick(const Chessboard3D chess3D, int mouseX, int mouseY
             std::cout << "Square with piece (" << square->x << ", " << square->y << ") selected!\n"; 
             _selectedSquare = square;
             updatePossibleMoves();
-            std::cout << "Possible moves updated!" << std::endl;
+            // std::cout << "Possible moves updated!" << std::endl;
         }
         return;
     }
@@ -333,4 +335,98 @@ void Game3D::handleMouseClick(const Chessboard3D chess3D, int mouseX, int mouseY
         }
         return;
     }
+}
+
+void Game3D::renderShaderBackground(sf::RenderWindow& window, float time) const
+{
+    static sf::Shader shader;
+    static sf::VertexArray quad;
+    static bool isInitialized = false;
+
+    if (!isInitialized) {
+        const std::string vertexShader = R"(
+            #version 120
+            attribute vec2 aPos;
+            varying vec2 vUV;
+            void main() {
+                vUV = aPos * 0.5 + 0.5;
+                gl_Position = vec4(aPos, 0.0, 1.0);
+            }
+        )";
+
+        const std::string fragmentShader = R"(
+          #version 120
+          // Inputs from vertex shader and host
+          varying vec2 vUV;
+          uniform vec2 u_resolution;
+          uniform float u_time;
+
+          void main() {
+              vec2 uv = vUV - 0.5;
+              uv.y *= u_resolution.y / u_resolution.x;
+
+              vec3 finalColor = vec3(0.0);
+              
+              const float numberOfRibbons = 4.0;
+              for(float i = 1.0; i <= numberOfRibbons; i++) {
+                  float t_offset = u_time * 0.5 + i * 2.3;
+
+                  vec2 point = vec2(
+                      sin(t_offset * 1.1) * 0.4,
+                      cos(t_offset * 1.4) * 0.3
+                  );
+
+                  // Calculate distance from the current pixel to this moving point
+                  float dist = length(uv - point);
+
+                  // --- The Core "Neon" Effect ---
+                  // We want high brightness when distance is near zero.
+                  // 1.0 / dist gives a glow, but it's too wide.
+                  // pow(..., 2.0) sharpens the glow into a thin line.
+                  float intensity = 0.001 / pow(abs(dist - 0.02), 1.8);
+                  
+                  // Smooth out the extreme bright spots
+                  intensity = clamp(intensity, 0.0, 1.0);
+
+                  // Give each ribbon a slightly different color palette
+                  // Varying colors over time:
+                  float r = sin(u_time * 0.5 + i) * 0.5 + 0.5;
+                  float g = sin(u_time * 0.7 + i) * 0.5 + 0.5;
+                  // Keep blue high for that "neon" look
+                  vec3 ribbonColor = vec3(r * 0.4, g * 0.6, 1.0); 
+
+                  // Add this ribbon's contribution to the final pixel color
+                  finalColor += ribbonColor * intensity;
+              }
+              // Final color with a dark background tone
+              gl_FragColor = vec4(finalColor * 0.6, 1.0);
+          }
+        )";
+
+        if (!shader.loadFromMemory(vertexShader, fragmentShader)) {
+            std::cerr << "Failed to load shader\n";
+            return;
+        }
+        quad.setPrimitiveType(sf::Triangles);
+        quad.resize(6);
+
+        quad[0].position = sf::Vector2f(-1.f, -1.f);
+        quad[1].position = sf::Vector2f( 1.f, -1.f);
+        quad[2].position = sf::Vector2f( 1.f,  1.f);
+        quad[3].position = sf::Vector2f(-1.f, -1.f);
+        quad[4].position = sf::Vector2f( 1.f,  1.f);
+        quad[5].position = sf::Vector2f(-1.f,  1.f);
+
+        isInitialized = true;
+    }
+
+    sf::Vector2f windowResolution(static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y));
+    shader.setUniform("u_resolution", windowResolution);
+    shader.setUniform("u_time", time);
+    
+    window.pushGLStates();
+    sf::RenderStates states;
+    states.shader = &shader;
+    window.draw(quad, states);
+    window.popGLStates();
 }
